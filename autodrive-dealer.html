@@ -1,0 +1,3947 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>AutoDrive — Dealer Console</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#f4f5f9;--s1:#ffffff;--s2:#f8f9fc;--s3:#eef0f7;
+  --b1:#e4e6f0;--b2:#d1d4e8;
+  --tx:#111827;--mu:#6b7280;--di:#9ca3af;
+  --ac:#1a56db;--acl:#eff3ff;--acm:#c7d6fd;
+  --gr:#059669;--grl:#ecfdf5;--grm:#a7f3d0;
+  --or:#d97706;--orl:#fffbeb;--orm:#fde68a;
+  --rd:#dc2626;--rdl:#fef2f2;--rdm:#fecaca;
+  --pu:#7c3aed;--pul:#f5f3ff;
+  --rad:12px;
+}
+html,body{height:100%;background:var(--bg);color:var(--tx);font-family:'Plus Jakarta Sans',system-ui,sans-serif;font-size:14px;line-height:1.5}
+button,input,select,textarea{font-family:inherit}
+button{cursor:pointer}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--b2);border-radius:3px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ── LOGIN ── */
+#login-screen{
+  position:fixed;inset:0;z-index:999;
+  background:linear-gradient(135deg,#0f172a 0%,#1e3a8a 50%,#0f172a 100%);
+  display:flex;align-items:center;justify-content:center;
+}
+.login-card{
+  background:#fff;border-radius:20px;padding:44px 48px;
+  width:100%;max-width:420px;
+  box-shadow:0 32px 80px rgba(0,0,0,.4);
+}
+.login-logo{display:flex;align-items:center;gap:10px;margin-bottom:32px;justify-content:center}
+.login-logo-mark{
+  width:40px;height:40px;border-radius:11px;
+  background:linear-gradient(135deg,#1a56db,#7c3aed);
+  color:#fff;font-size:14px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;letter-spacing:-.5px;
+}
+.login-logo-name{font-size:20px;font-weight:800;letter-spacing:-.5px;color:var(--tx)}
+.login-logo-badge{font-size:10px;color:var(--mu);background:var(--s3);padding:2px 8px;border-radius:4px;font-weight:600;letter-spacing:.5px;text-transform:uppercase}
+.login-title{font-size:24px;font-weight:700;text-align:center;margin-bottom:4px;letter-spacing:-.4px}
+.login-sub{font-size:13px;color:var(--mu);text-align:center;margin-bottom:28px}
+.login-demo{
+  background:var(--acl);border:1px solid var(--acm);border-radius:10px;
+  padding:12px 14px;margin-bottom:20px;font-size:12px;color:var(--ac);
+  display:flex;gap:10px;align-items:flex-start;
+}
+.login-group{margin-bottom:16px}
+.login-label{display:block;font-size:11px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase;color:var(--mu);margin-bottom:6px}
+.login-input{
+  width:100%;padding:11px 14px;
+  background:var(--s2);border:1.5px solid var(--b1);
+  border-radius:9px;font-size:14px;color:var(--tx);outline:none;
+  transition:border-color .2s;
+}
+.login-input:focus{border-color:var(--ac)}
+.login-btn{
+  width:100%;padding:13px;border-radius:10px;border:none;
+  background:linear-gradient(135deg,var(--ac),#7c3aed);
+  color:#fff;font-size:14px;font-weight:700;letter-spacing:.2px;
+  transition:all .2s;box-shadow:0 6px 20px rgba(26,86,219,.35);
+}
+.login-btn:hover{transform:translateY(-1px);box-shadow:0 10px 28px rgba(26,86,219,.4)}
+.login-err{color:var(--rd);font-size:12px;text-align:center;margin-top:10px;display:none}
+
+/* ── APP SHELL ── */
+
+/* ── SIDEBAR ── */
+
+.sb-logo{display:flex;align-items:center;gap:9px;margin-bottom:14px}
+.sb-mark{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--ac),var(--pu));
+  color:#fff;font-size:11px;font-weight:800;
+  display:flex;align-items:center;justify-content:center;
+}
+.sb-name{font-size:15px;font-weight:700;letter-spacing:-.3px}
+.sb-dealer{font-size:10px;color:var(--mu);letter-spacing:.5px;text-transform:uppercase;font-weight:600}
+.dealer-badge{
+  display:flex;align-items:center;gap:8px;
+  background:var(--s2);border:1px solid var(--b1);border-radius:9px;
+  padding:8px 10px;
+}
+.dealer-avatar{
+  width:30px;height:30px;border-radius:8px;
+  background:linear-gradient(135deg,var(--ac),var(--pu));
+  color:#fff;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+}
+.dealer-info-name{font-size:12px;font-weight:600;color:var(--tx)}
+.dealer-info-role{font-size:10px;color:var(--mu)}
+.sb-nav{flex:1;padding:10px 10px;overflow-y:auto}
+.sb-section{margin-bottom:20px}
+.sb-section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--di);padding:0 8px;margin-bottom:6px}
+.sb-link{
+  display:flex;align-items:center;gap:10px;
+  padding:8px 10px;border-radius:8px;
+  color:var(--mu);text-decoration:none;
+  font-size:13px;font-weight:500;
+  transition:all .14s;border:none;background:none;
+  width:100%;text-align:left;position:relative;
+}
+.sb-link:hover{background:var(--s2);color:var(--tx)}
+.sb-link.active{background:var(--acl);color:var(--ac);font-weight:600}
+.sb-link-icon{font-size:16px;width:20px;text-align:center;flex-shrink:0}
+.sb-badge{
+  margin-left:auto;background:var(--ac);color:#fff;
+  font-size:9px;font-weight:700;min-width:16px;height:16px;
+  border-radius:8px;display:flex;align-items:center;justify-content:center;
+  padding:0 4px;
+}
+.sb-footer{padding:14px 10px;border-top:1px solid var(--b1)}
+.sb-logout{
+  display:flex;align-items:center;gap:9px;
+  padding:8px 10px;border-radius:8px;border:none;background:none;
+  color:var(--rd);font-size:13px;font-weight:500;width:100%;
+  transition:all .14s;
+}
+.sb-logout:hover{background:var(--rdl)}
+
+.live-dot{width:7px;height:7px;border-radius:50%;background:var(--gr);animation:pulse 2s ease infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── MAIN CONTENT ── */
+
+.sync-badge{
+  display:flex;align-items:center;gap:5px;
+  padding:5px 11px;border-radius:20px;
+  background:var(--grl);border:1px solid var(--grm);
+  font-size:11px;font-weight:600;color:var(--gr);
+}
+.refresh-btn{
+  padding:6px 13px;border-radius:8px;
+  border:1.5px solid var(--b1);background:var(--s1);
+  font-size:12px;font-weight:600;color:var(--mu);
+  display:flex;align-items:center;gap:6px;transition:all .14s;
+}
+.refresh-btn:hover{background:var(--s2);color:var(--tx)}
+
+/* ── STATS GRID ── */
+
+.sc-blue::after{background:var(--ac)}
+.sc-green::after{background:var(--gr)}
+.sc-orange::after{background:var(--or)}
+.sc-purple::after{background:var(--pu)}
+
+.stat-trend{font-size:10px;font-weight:600;padding:2px 6px;border-radius:4px}
+.trend-up{background:var(--grl);color:var(--gr)}
+.trend-down{background:var(--rdl);color:var(--rd)}
+
+/* ── SECTION ── */
+
+.section-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.search-input{
+  padding:7px 13px 7px 32px;border-radius:8px;
+  border:1.5px solid var(--b1);background:var(--s1);
+  font-size:12px;color:var(--tx);outline:none;transition:border-color .2s;
+  width:200px;
+}
+.search-input:focus{border-color:var(--ac)}
+.search-wrap{position:relative}
+.search-icon{position:absolute;left:10px;top:50%;transform:translateY(-50%);color:var(--di);font-size:12px}
+.filter-select{
+  padding:7px 12px;border-radius:8px;
+  border:1.5px solid var(--b1);background:var(--s1);
+  font-size:12px;color:var(--mu);outline:none;
+  -webkit-appearance:none;cursor:pointer;
+}
+.filter-select:focus{border-color:var(--ac)}
+.btn-sm{
+  padding:7px 14px;border-radius:8px;border:none;
+  font-size:12px;font-weight:600;transition:all .14s;
+}
+.btn-primary{background:var(--ac);color:#fff}
+.btn-primary:hover{background:#1648c0}
+.btn-ghost{background:var(--s2);color:var(--mu);border:1.5px solid var(--b1)!important}
+.btn-ghost:hover{background:var(--s3);color:var(--tx)}
+
+/* ── TABLE ── */
+.
+
+thead tr{background:var(--s2);border-bottom:1px solid var(--b1)}
+th{
+  text-align:left;padding:10px 14px;
+  font-size:10px;font-weight:700;letter-spacing:1.3px;
+  text-transform:uppercase;color:var(--mu);
+  white-space:nowrap;font-family:'JetBrains Mono',monospace;
+}
+tbody td{padding:12px 14px;border-bottom:1px solid var(--b1);vertical-align:middle;font-size:13px}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover td{background:var(--s2)}
+.td-name{font-weight:600;color:var(--tx)}
+.td-sub{font-size:11px;color:var(--mu);margin-top:1px}
+.avatar-cell{display:flex;align-items:center;gap:10px}
+.avatar{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--ac),var(--pu));
+  color:#fff;font-size:11px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600;white-space:nowrap}
+.badge-browsing{background:var(--acl);color:var(--ac)}
+.badge-interested{background:var(--orl);color:var(--or)}
+.badge-ready{background:var(--grl);color:var(--gr)}
+
+.badge-available{background:var(--grl);color:var(--gr)}
+.badge-reserved{background:var(--orl);color:var(--or)}
+.badge-sold{background:var(--rdl);color:var(--rd)}
+
+/* ── QUALITY SCORE ── */
+.quality-score{
+  display:flex;align-items:center;gap:8px;
+}
+.qs-bar{width:60px;height:5px;background:var(--b1);border-radius:3px;overflow:hidden;flex-shrink:0}
+.qs-fill{height:100%;border-radius:3px}
+.qs-num{font-size:13px;font-weight:700;font-variant-numeric:tabular-nums;font-family:'JetBrains Mono',monospace}
+
+/* ── ACTION BTNS ── */
+.action-btns{display:flex;gap:5px}
+.act-btn{
+  padding:5px 10px;border-radius:6px;border:1.5px solid var(--b1);
+  background:transparent;font-size:11px;font-weight:600;color:var(--mu);
+  transition:all .14s;white-space:nowrap;
+}
+.act-btn:hover{background:var(--s2);color:var(--tx)}
+.act-btn.primary{background:var(--ac);color:#fff;border-color:var(--ac)}
+.act-btn.primary:hover{background:#1648c0}
+.act-btn.green{background:var(--gr);color:#fff;border-color:var(--gr)}
+.act-btn.green:hover{background:#047857}
+
+/* ── INVENTORY GRID ── */
+.inv-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.inv-card{
+  background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);
+  overflow:hidden;transition:border-color .2s,box-shadow .2s;
+}
+.inv-card:hover{border-color:var(--b2);box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.inv-img{
+  height:140px;background:var(--s2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:58px;opacity:.18;position:relative;
+}
+.inv-body{padding:13px 15px}
+.inv-year{font-size:10px;color:var(--mu);font-variant-numeric:tabular-nums;margin-bottom:2px}
+.inv-name{font-size:15px;font-weight:700;letter-spacing:-.2px;margin-bottom:2px}
+.inv-price{font-size:20px;font-weight:700;color:var(--ac);font-variant-numeric:tabular-nums;margin-bottom:6px}
+.inv-tags{display:flex;gap:5px;flex-wrap:wrap;margin-bottom:10px}
+.inv-tag{padding:3px 8px;border-radius:20px;background:var(--s2);border:1px solid var(--b1);font-size:10px;color:var(--mu)}
+.inv-footer{display:flex;justify-content:space-between;align-items:center}
+.inv-stats{font-size:11px;color:var(--mu)}
+.inv-edit-btn{padding:5px 12px;border-radius:7px;border:1.5px solid var(--b1);background:transparent;font-size:11px;font-weight:600;color:var(--mu);transition:all .14s}
+.inv-edit-btn:hover{background:var(--s2);color:var(--tx)}
+
+/* ── CALENDAR ── */
+.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:20px}
+.cal-header{font-size:11px;font-weight:600;color:var(--mu);text-align:center;padding:6px 0;letter-spacing:.5px}
+.cal-day{
+  min-height:80px;background:var(--s1);border:1px solid var(--b1);border-radius:8px;
+  padding:6px;font-size:11px;transition:border-color .14s;
+}
+.cal-day:hover{border-color:var(--b2)}
+.cal-day.today{border-color:var(--ac);background:var(--acl)}
+.cal-day.has-appt{background:var(--grl);border-color:var(--grm)}
+.cal-day-num{font-weight:700;margin-bottom:4px;color:var(--tx);font-variant-numeric:tabular-nums}
+.cal-day.today 
+.cal-appt{
+  background:var(--gr);color:#fff;border-radius:4px;
+  padding:2px 5px;font-size:9px;font-weight:600;margin-bottom:2px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cal-appt.pending{background:var(--or)}
+.appt-list{display:flex;flex-direction:column;gap:10px}
+.appt-item{
+  display:flex;align-items:center;gap:14px;
+  background:var(--s1);border:1px solid var(--b1);border-radius:10px;
+  padding:13px 16px;
+}
+.appt-time{
+  font-family:'JetBrains Mono',monospace;
+  font-size:13px;font-weight:600;color:var(--tx);
+  min-width:80px;
+}
+.appt-info{flex:1}
+.appt-car{font-size:13px;font-weight:600;color:var(--tx)}
+.appt-buyer{font-size:11px;color:var(--mu);margin-top:1px}
+
+/* ── ANALYTICS ── */
+.analytics-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.chart-card{background:var(--s1);border:1px solid var(--b1);border-radius:var(--rad);padding:20px}
+.chart-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--mu);margin-bottom:18px}
+.bar-chart{display:flex;align-items:flex-end;gap:8px;height:120px}
+.bar-col{display:flex;flex-direction:column;align-items:center;gap:5px;flex:1}
+.bar{width:100%;border-radius:5px 5px 0 0;transition:all .3s;min-height:4px}
+.bar-label{font-size:10px;color:var(--mu);font-weight:500;text-align:center;white-space:nowrap}
+.bar-val{font-size:10px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums}
+.funnel{display:flex;flex-direction:column;gap:8px}
+.funnel-step{display:flex;align-items:center;gap:10px;font-size:13px}
+.funnel-bar{height:28px;border-radius:5px;display:flex;align-items:center;padding:0 12px;font-size:11px;font-weight:600;color:#fff;min-width:60px;transition:width .3s}
+.funnel-count{font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;min-width:28px}
+.funnel-pct{font-size:11px;color:var(--mu)}
+.metric-list{display:flex;flex-direction:column;gap:0}
+.metric-row{display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--b1)}
+.metric-row:last-child{border-bottom:none}
+.metric-label{font-size:13px;color:var(--mu)}
+.metric-val{font-size:15px;font-weight:700;font-variant-numeric:tabular-nums;color:var(--tx)}
+.metric-val.good{color:var(--gr)}
+.metric-val.warn{color:var(--or)}
+
+/* ── DRAWER (lead detail) ── */
+.drawer-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.35);z-index:400;backdrop-filter:blur(2px)}
+.drawer-overlay.open{display:block;animation:fadeIn .2s ease}
+.drawer{
+  position:fixed;right:0;top:0;bottom:0;width:400px;
+  background:var(--s1);border-left:1px solid var(--b1);
+  z-index:401;overflow-y:auto;
+  transform:translateX(100%);transition:transform .25s ease;
+}
+.drawer.open{transform:translateX(0)}
+.drawer-header{
+  display:flex;align-items:center;gap:12px;
+  padding:18px 20px;border-bottom:1px solid var(--b1);
+  position:sticky;top:0;background:var(--s1);z-index:1;
+}
+.drawer-title{font-size:16px;font-weight:700;flex:1}
+.drawer-close{
+  width:28px;height:28px;border-radius:7px;border:none;
+  background:var(--s2);color:var(--mu);font-size:16px;
+  display:flex;align-items:center;justify-content:center;
+}
+.drawer-close:hover{background:var(--s3)}
+.drawer-body{padding:20px}
+.dl-section{margin-bottom:20px}
+.dl-section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--di);margin-bottom:10px}
+.dl-row{display:flex;justify-content:space-between;align-items:flex-start;padding:7px 0;border-bottom:1px solid var(--b1);font-size:13px}
+.dl-row:last-child{border-bottom:none}
+.dl-key{color:var(--mu)}
+.dl-val{font-weight:500;color:var(--tx);text-align:right;max-width:200px}
+.drawer-actions{display:flex;flex-direction:column;gap:8px;margin-top:4px}
+.da-btn{padding:11px 14px;border-radius:9px;border:none;font-size:13px;font-weight:600;display:flex;align-items:center;gap:8px;transition:all .14s}
+.da-btn-primary{background:var(--ac);color:#fff}
+.da-btn-primary:hover{background:#1648c0}
+.da-btn-green{background:var(--gr);color:#fff}
+.da-btn-green:hover{background:#047857}
+.da-btn-ghost{background:var(--s2);color:var(--mu);border:1.5px solid var(--b1)!important}
+.da-btn-ghost:hover{background:var(--s3);color:var(--tx)}
+
+/* ── MODAL ── */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:500;align-items:center;justify-content:center;padding:20px}
+.modal-overlay.open{display:flex;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+.modal{background:var(--s1);border:1px solid var(--b2);border-radius:16px;padding:28px;width:100%;max-width:480px;box-shadow:0 24px 60px rgba(0,0,0,.15)}
+.modal-title{font-size:18px;font-weight:700;margin-bottom:4px;letter-spacing:-.3px}
+.modal-sub{font-size:13px;color:var(--mu);margin-bottom:22px;line-height:1.6}
+.modal-form-group{margin-bottom:14px}
+.modal-label{display:block;font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--mu);margin-bottom:5px}
+.modal-input{width:100%;padding:9px 12px;background:var(--s2);border:1.5px solid var(--b1);border-radius:8px;font-size:13px;color:var(--tx);outline:none;transition:border-color .2s;-webkit-appearance:none}
+.modal-input:focus{border-color:var(--ac)}
+.modal-actions{display:flex;gap:9px;justify-content:flex-end;margin-top:6px}
+
+/* ── TOAST ── */
+.toast{
+  position:fixed;bottom:24px;right:24px;
+  background:var(--tx);color:#fff;
+  border-radius:10px;padding:11px 18px;
+  font-size:13px;font-weight:600;
+  box-shadow:0 8px 24px rgba(0,0,0,.2);
+  z-index:9999;display:flex;align-items:center;gap:8px;
+  animation:slideR .25s ease;max-width:320px;
+}
+@keyframes slideR{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.success{background:var(--gr)}
+.toast.error{background:var(--rd)}
+.toast.info{background:var(--ac)}
+
+/* ── EMPTY ── */
+.empty-box{text-align:center;padding:50px 20px}
+.empty-box .ei{font-size:44px;opacity:.25;margin-bottom:14px}
+.empty-box h3{font-size:17px;font-weight:700;margin-bottom:5px}
+.empty-box p{font-size:13px;color:var(--mu)}
+
+/* UTILS */
+.sep{border:none;border-top:1px solid var(--b1);margin:16px 0}
+.text-green{color:var(--gr)}
+.text-orange{color:var(--or)}
+.text-red{color:var(--rd)}
+.text-blue{color:var(--ac)}
+.font-mono{font-family:'JetBrains Mono',monospace}
+
+/* ── INTENT GAUGE ─────────────────────────────────────────────────── */
+.intent-gauge-wrap{display:flex;flex-direction:column;gap:4px;padding:10px 14px;background:var(--s2);border-radius:9px;margin-bottom:12px}
+.ig-row{display:flex;align-items:center;gap:8px;font-size:11px}
+.ig-track{flex:1;height:6px;background:var(--b1);border-radius:3px;overflow:hidden}
+.ig-fill{height:100%;border-radius:3px;transition:width .6s ease}
+.ig-val{min-width:32px;text-align:right;font-weight:700;font-variant-numeric:tabular-nums}
+.intent-level-chip{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:20px;font-size:11px;font-weight:700}
+
+/* ── WALKAROUND PROMPT CARD ───────────────────────────────────────── */
+.walkaround-card{background:linear-gradient(135deg,#1e3a8a,#1a56db);border-radius:12px;padding:16px 18px;margin-bottom:14px;color:#fff;position:relative;overflow:hidden}
+.wa-bg{position:absolute;right:-10px;top:-10px;font-size:80px;opacity:.08;pointer-events:none}
+.wa-title{font-size:14px;font-weight:700;margin-bottom:4px}
+.wa-sub{font-size:11.5px;opacity:.8;line-height:1.5;margin-bottom:12px}
+.wa-stat{font-size:22px;font-weight:800;margin-bottom:2px}
+.wa-stat-lbl{font-size:10px;opacity:.7;letter-spacing:.5px;text-transform:uppercase}
+.wa-btn{background:rgba(255,255,255,.2);border:1px solid rgba(255,255,255,.3);color:#fff;border-radius:8px;padding:7px 14px;font-size:12px;font-weight:700;cursor:pointer;transition:all .15s}
+.wa-btn:hover{background:rgba(255,255,255,.3)}
+
+/* ── AI SUGGESTED REPLIES ─────────────────────────────────────────── */
+.ai-suggest-section{padding-top:10px;border-top:1px solid var(--b1)}
+.ai-suggest-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:var(--mu);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.ai-suggest-label::after{content:'AI';background:linear-gradient(135deg,var(--ac),#7c3aed);color:#fff;font-size:8px;padding:1px 5px;border-radius:4px;font-weight:800;letter-spacing:.5px}
+.suggest-pill{display:flex;align-items:flex-start;gap:9px;padding:8px 11px;background:var(--s2);border:1px solid var(--b1);border-radius:9px;cursor:pointer;transition:all .15s;margin-bottom:6px;text-align:left;width:100%}
+.suggest-pill:hover{border-color:var(--ac);background:var(--acl)}
+.suggest-pill-text{font-size:12px;color:var(--tx);line-height:1.4;flex:1}
+.suggest-pill-tag{font-size:9px;font-weight:700;padding:1px 6px;border-radius:4px;flex-shrink:0;margin-top:2px}
+.spt-trust{background:rgba(29,185,106,.15);color:var(--gr)}
+.spt-price{background:rgba(245,166,35,.12);color:var(--or)}
+.spt-urgency{background:rgba(91,110,245,.12);color:var(--ac)}
+.spt-service{background:rgba(6,182,212,.12);color:var(--cy,#06b6d4)}
+
+/* ── DEMAND INSIGHTS / VIBE HEATMAP ──────────────────────────────── */
+.demand-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:10px;margin-top:12px}
+.demand-tag{background:var(--s1);border:1px solid var(--b1);border-radius:10px;padding:12px 14px;transition:all .15s}
+.demand-tag:hover{border-color:var(--b2)}
+.dt-name{font-size:12px;font-weight:700;margin-bottom:5px}
+.dt-bar-track{height:4px;background:var(--b2);border-radius:2px;overflow:hidden;margin-bottom:5px}
+.dt-bar-fill{height:100%;border-radius:2px;transition:width .5s ease}
+.dt-stats{display:flex;justify-content:space-between;font-size:10px;color:var(--mu);font-variant-numeric:tabular-nums}
+.dt-trending{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:700;margin-top:4px}
+
+/* ════════════════════════════════════════════════════════════════════
+   DEALER CRM — Vertical-agnostic styles
+   ════════════════════════════════════════════════════════════════════ */
+
+/* ── LeadPreview / CRM Card ─────────────────────────────────────── */
+.crm-card{
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
+  overflow:hidden;transition:box-shadow .15s,border-color .15s;
+  cursor:pointer;
+}
+.crm-card:hover{border-color:var(--b2);box-shadow:0 4px 20px rgba(0,0,0,.15)}
+.crm-card.crm-new{border-left:3px solid var(--ac)}
+.crm-card.crm-contacted{border-left:3px solid var(--or)}
+.crm-card.crm-hot{border-left:3px solid var(--rd)}
+.crm-card.crm-sold{border-left:3px solid var(--gr);opacity:.7}
+
+.crm-card-hdr{
+  display:flex;align-items:center;gap:12px;
+  padding:13px 15px 10px;
+}
+.crm-avatar{
+  width:40px;height:40px;border-radius:10px;
+  background:linear-gradient(135deg,var(--ac),#8b5cf6);
+  color:#fff;font-size:13px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.crm-name{font-size:14px;font-weight:700;margin-bottom:2px}
+.crm-vehicle{font-size:11px;color:var(--mu);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px}
+.crm-meta{margin-left:auto;text-align:right;flex-shrink:0}
+.crm-time{font-size:10px;color:var(--di);margin-bottom:3px}
+.crm-status-dot{
+  width:8px;height:8px;border-radius:50%;display:inline-block;margin-left:auto;
+}
+
+/* Heat Map bar — shows buyer intent intensity */
+.crm-heat{padding:0 15px 12px}
+.crm-heat-label{
+  display:flex;justify-content:space-between;align-items:center;
+  font-size:10px;color:var(--mu);margin-bottom:5px;
+}
+.crm-heat-label .heat-val{font-weight:700;font-variant-numeric:tabular-nums}
+.heat-track{height:6px;background:var(--s2);border-radius:3px;overflow:hidden;position:relative}
+.heat-fill{
+  height:100%;border-radius:3px;
+  transition:width .5s cubic-bezier(.34,1.56,.64,1);
+}
+.heat-fill.h-hot  {background:linear-gradient(90deg,#f04f4f,#ff9500)}
+.heat-fill.h-warm {background:linear-gradient(90deg,var(--or),#f0c040)}
+.heat-fill.h-cool {background:linear-gradient(90deg,var(--ac),#6366f1)}
+
+/* revD financial summary in CRM card */
+.crm-finance-row{
+  display:flex;gap:6px;padding:0 15px 12px;flex-wrap:wrap;
+}
+.crm-fin-chip{
+  padding:3px 9px;border-radius:20px;font-size:10px;font-weight:700;
+  background:var(--s2);border:1px solid var(--b1);color:var(--mu);
+  white-space:nowrap;
+}
+.crm-fin-chip.finance{background:rgba(91,110,245,.1);color:var(--ac);border-color:rgba(91,110,245,.25)}
+.crm-fin-chip.cash   {background:rgba(29,185,106,.1);color:var(--gr);border-color:rgba(29,185,106,.25)}
+
+/* Ghost message preview in CRM card */
+.crm-ghost-preview{
+  padding:8px 15px 12px;
+  font-size:11px;color:var(--mu);font-style:italic;line-height:1.5;
+  border-top:1px solid var(--b1);
+}
+.crm-ghost-preview strong{color:var(--tx);font-style:normal}
+
+/* CRM Lead actions strip */
+.crm-actions{
+  display:flex;border-top:1px solid var(--b1);
+}
+.crm-action-btn{
+  flex:1;padding:9px 6px;border:none;background:transparent;
+  font-size:11px;font-weight:600;color:var(--mu);
+  display:flex;flex-direction:column;align-items:center;gap:2px;
+  transition:background .12s,color .12s;cursor:pointer;
+  border-right:1px solid var(--b1);
+}
+.crm-action-btn:last-child{border-right:none}
+.crm-action-btn:hover{background:var(--s2);color:var(--tx)}
+.crm-action-btn .ca-icon{font-size:15px}
+.crm-action-btn.primary{color:var(--ac)}
+.crm-action-btn.primary:hover{background:rgba(91,110,245,.08)}
+
+/* ── CRM Sort/Filter bar ────────────────────────────────────────── */
+.crm-toolbar{
+  display:flex;align-items:center;gap:9px;
+  padding:14px 0 18px;flex-wrap:wrap;
+}
+.crm-sort-select{
+  padding:6px 10px;border-radius:8px;border:1px solid var(--b1);
+  background:var(--s2);color:var(--tx);font-size:12px;font-weight:600;
+  cursor:pointer;
+}
+.crm-filter-pill{
+  padding:5px 12px;border-radius:20px;border:1px solid var(--b1);
+  background:var(--s2);font-size:11px;font-weight:600;color:var(--mu);
+  cursor:pointer;transition:all .12s;
+}
+.crm-filter-pill.active{
+  border-color:var(--ac);background:rgba(91,110,245,.1);color:var(--ac);
+}
+.crm-count-badge{
+  margin-left:auto;font-size:12px;font-weight:600;color:var(--mu);
+  background:var(--s2);padding:4px 10px;border-radius:20px;
+}
+
+/* ── Dealer Controls Panel (chat upgrades) ──────────────────────── */
+.dealer-controls{
+  border-top:1px solid var(--b1);padding:10px 14px;
+  background:var(--s1);flex-shrink:0;
+}
+.dc-label{
+  font-size:9px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--mu);margin-bottom:8px;
+}
+.dc-actions{display:flex;gap:7px;flex-wrap:wrap}
+.dc-btn{
+  display:flex;align-items:center;gap:6px;
+  padding:7px 12px;border-radius:9px;
+  border:1.5px solid var(--b1);background:var(--s2);
+  font-size:11px;font-weight:700;color:var(--mu);
+  cursor:pointer;transition:all .15s;white-space:nowrap;
+}
+.dc-btn:hover{border-color:var(--b2);color:var(--tx);background:var(--s3)}
+.dc-btn.primary{
+  background:var(--ac);color:#fff;border-color:var(--ac);
+}
+.dc-btn.primary:hover{background:#1548c8;border-color:#1548c8}
+.dc-btn.success{
+  background:var(--gr);color:#000;border-color:var(--gr);
+}
+
+/* Appraisal / schedule modal */
+.dlr-modal{
+  display:none;position:fixed;inset:0;z-index:600;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:24px;
+}
+.dlr-modal.open{display:flex;animation:fdi .2s ease}
+.dlr-modal-inner{
+  background:var(--s1);border:1px solid var(--b2);border-radius:18px;
+  padding:26px;width:100%;max-width:420px;
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  animation:sci .18s ease;
+}
+.dlr-modal-title{font-size:18px;font-weight:700;margin-bottom:4px}
+.dlr-modal-sub{font-size:12px;color:var(--mu);margin-bottom:20px;line-height:1.5}
+
+/* ── Inventory Form upgrades ────────────────────────────────────── */
+.inv-form{
+  background:var(--s1);border:1px solid var(--b1);border-radius:14px;
+  overflow:hidden;
+}
+.inv-form-section{padding:18px 20px;border-bottom:1px solid var(--b1)}
+.inv-form-section:last-child{border-bottom:none}
+.inv-form-title{
+  font-size:11px;font-weight:700;letter-spacing:1.5px;
+  text-transform:uppercase;color:var(--mu);margin-bottom:14px;
+}
+.vibe-tag-grid{display:flex;flex-wrap:wrap;gap:7px;margin-top:6px}
+.vtg-chip{
+  padding:5px 12px;border-radius:20px;
+  border:1.5px solid var(--b1);background:var(--s2);
+  font-size:12px;font-weight:600;color:var(--mu);
+  cursor:pointer;transition:all .12s;
+}
+.vtg-chip.on{
+  border-color:var(--ac);background:rgba(91,110,245,.1);color:var(--ac);
+}
+
+/* Image upload zone */
+.img-upload-zone{
+  border:2px dashed var(--b1);border-radius:12px;
+  display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:8px;padding:24px;
+  cursor:pointer;transition:all .15s;text-align:center;
+  background:var(--s2);
+}
+.img-upload-zone:hover{border-color:var(--ac);background:rgba(91,110,245,.04)}
+.img-upload-zone.has-img{
+  border-color:var(--gr);padding:8px;
+  background:transparent;
+}
+.img-upload-zone img{
+  width:100%;max-height:180px;object-fit:cover;
+  border-radius:8px;display:block;
+}
+.img-upload-label{font-size:12px;color:var(--mu)}
+.img-upload-icon{font-size:28px;opacity:.4}
+
+/* Firebase Storage upload progress */
+.upload-progress{
+  display:none;margin-top:8px;
+}
+.upload-progress.show{display:block}
+.up-bar-track{height:3px;background:var(--b1);border-radius:2px;overflow:hidden}
+.up-bar-fill{height:100%;background:var(--ac);border-radius:2px;transition:width .2s ease}
+.up-status{font-size:10px;color:var(--ac);margin-top:4px;font-weight:600}
+
+/* ── Vertical-Agnostic CRM Domain Config ────────────────────────── */
+/* Classes applied to <body> based on CRM_DOMAIN setting */
+body.domain-auto .domain-item-label::before   {content:'Vehicle'}
+body.domain-realestate .domain-item-label::before{content:'Property'}
+body.domain-jobs .domain-item-label::before   {content:'Role'}
+body.domain-auto .domain-agent-label::before  {content:'Dealer'}
+body.domain-realestate .domain-agent-label::before{content:'Agent'}
+body.domain-jobs .domain-agent-label::before  {content:'Recruiter'}
+
+/* ── SIDEBAR TOGGLE ─────────────────────────────────────────────── */
+
+/* ── RESPONSIVE BREAKPOINTS ─────────────────────────────────────── */
+
+/* ── TABLE OVERFLOW FIX ─────────────────────────────────────────── */
+
+/* ── LIVE INDICATOR COMPACT ─────────────────────────────────────── */
+
+/* ══════════════════════════════════════════════════════════════════
+   LAYOUT SYSTEM  —  single source of truth, no duplicate rules
+   ══════════════════════════════════════════════════════════════════ */
+
+/* 1. Root container — full viewport flex row */
+
+/* 2. Sidebar — flex-shrink:0 so it never collapses unless we say so */
+
+/* 3. Sidebar — collapsed state: icon rail only */
+
+/* Hide text labels in collapsed state */
+
+/* 4. Main area — THE FIX:
+   min-width:0 is critical. Without it, a flex child defaults to
+   min-width:auto (its content's intrinsic width), which means it
+   can never shrink below that width and will overflow the sidebar. */
+
+/* 5. Content scroll area — fills remaining height, scrolls vertically */
+
+/* 6. Topbar — fixed height, never scrolls */
+
+/* 7. Stats grid — 2×2 base, expands at wider viewports */
+
+/* 8. Stat card */
+
+.sc-blue::after{background:var(--ac)}
+.sc-green::after{background:var(--gr)}
+.sc-orange::after{background:var(--or)}
+.sc-purple::after{background:var(--pu)}
+
+/* 9. Table horizontal scroll wrapper */
+
+/* 10. Sidebar toggle button — INSIDE sidebar, not poking outside */
+
+/* 11. Live indicator */
+
+/* 12. Section header */
+
+/* ── RESPONSIVE BREAKPOINTS ─────────────────────────────────────── */
+
+/* Narrow desktop / tablet landscape: 4-col stats when there's room */
+
+/* Tablet portrait: auto-collapse sidebar */
+
+/* Mobile: tighter padding, keep 2-col stats */
+
+/* ══════════════════════════════════════════════════════════════════
+   MOBILE-FIRST LAYOUT  —  single source of truth
+   Mobile  (<768px): bottom nav + full-width stack
+   Tablet  (768px+): slide-over sidebar overlay
+   Desktop (1024px+): persistent sidebar, side-by-side
+   ══════════════════════════════════════════════════════════════════ */
+
+/* ── 1. App shell ─────────────────────────────────────────────── */
+#app{
+  display:flex;
+  flex-direction:column;    /* mobile: stack vertically */
+  height:100vh;
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── 2. Mobile top header ─────────────────────────────────────── */
+.topbar{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 16px;
+  height:52px;
+  min-height:52px;
+  flex-shrink:0;
+  background:var(--s1);
+  border-bottom:1px solid var(--b1);
+  position:sticky;
+  top:0;
+  z-index:50;
+  overflow:hidden;
+}
+.topbar-left{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  flex:1;
+  min-width:0;
+}
+.topbar-title{
+  font-size:16px;
+  font-weight:700;
+  letter-spacing:-.3px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.topbar-sub{display:none} /* hidden on mobile, shown on desktop */
+.topbar-right{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-shrink:0;
+}
+/* Hamburger — mobile only */
+.hamburger{
+  width:36px;height:36px;border-radius:9px;
+  border:1.5px solid var(--b1);background:var(--s2);
+  display:flex;align-items:center;justify-content:center;
+  font-size:17px;cursor:pointer;flex-shrink:0;
+  transition:background .14s;
+}
+.hamburger:hover{background:var(--s3)}
+
+/* ── 3. Body row (sidebar + main) ─────────────────────────────── */
+.app-body{
+  display:flex;
+  flex:1;
+  min-height:0;   /* critical: allow flex child to scroll */
+  overflow:hidden;
+  position:relative;
+}
+
+/* ── 4. Sidebar — HIDDEN on mobile, overlay on tablet, persistent on desktop */
+.sidebar{
+  /* Mobile default: slide-over drawer (off-screen left) */
+  position:fixed;
+  top:0;
+  left:0;
+  bottom:0;
+  width:260px;
+  background:var(--s1);
+  border-right:1px solid var(--b1);
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  z-index:200;
+  transform:translateX(-100%);
+  transition:transform .25s cubic-bezier(.4,0,.2,1);
+  /* shadow when open */
+  box-shadow:4px 0 24px rgba(0,0,0,.12);
+}
+.sidebar.open{
+  transform:translateX(0);
+}
+/* Overlay backdrop */
+.sb-backdrop{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.4);
+  z-index:190;
+  backdrop-filter:blur(2px);
+}
+.sb-backdrop.show{display:block}
+
+/* ── 5. Main content — full width on mobile ───────────────────── */
+.main{
+  flex:1;
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  overflow:hidden;
+  width:100%;         /* take full width by default */
+}
+
+/* ── 6. Scrollable content area ──────────────────────────────── */
+.content{
+  flex:1;
+  min-width:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:16px;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* ── 7. Stats grid — 2×2 on mobile ───────────────────────────── */
+.stats-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:10px;
+  margin-bottom:16px;
+}
+.stat-card{
+  background:var(--s1);
+  border:1px solid var(--b1);
+  border-radius:var(--rad);
+  padding:12px 14px;
+  position:relative;
+  overflow:hidden;
+  min-width:0;
+}
+.stat-card::after{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+}
+.sc-blue::after{background:var(--ac)}
+.sc-green::after{background:var(--gr)}
+.sc-orange::after{background:var(--or)}
+.sc-purple::after{background:var(--pu)}
+.stat-label{
+  font-size:9px;font-weight:700;letter-spacing:1.2px;
+  text-transform:uppercase;color:var(--mu);
+  margin-bottom:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.stat-val{
+  font-size:26px;font-weight:700;letter-spacing:-.6px;
+  line-height:1;font-variant-numeric:tabular-nums;margin-bottom:3px;
+}
+.stat-sub{font-size:11px;color:var(--mu)}
+.stat-change{font-size:10px;font-weight:600}
+
+/* ── 8. Table horizontal scroll ──────────────────────────────── */
+.table-wrap{
+  overflow-x:auto;
+  -webkit-overflow-scrolling:touch;
+  border-radius:var(--rad);
+  border:1px solid var(--b1);
+}
+table{min-width:520px;width:100%;border-collapse:collapse}
+
+/* ── 9. Bottom navigation — mobile primary nav ───────────────── */
+.bottom-nav{
+  display:flex;              /* visible on mobile */
+  align-items:stretch;
+  background:var(--s1);
+  border-top:1px solid var(--b1);
+  flex-shrink:0;
+  height:58px;
+  padding-bottom:env(safe-area-inset-bottom,0);
+  position:sticky;
+  bottom:0;
+  z-index:50;
+}
+.bn-item{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:2px;
+  border:none;
+  background:transparent;
+  color:var(--mu);
+  font-size:9px;
+  font-weight:600;
+  letter-spacing:.3px;
+  cursor:pointer;
+  transition:color .14s,background .14s;
+  padding:4px 2px;
+  position:relative;
+}
+.bn-item:hover{background:var(--s2)}
+.bn-item.active{color:var(--ac)}
+.bn-item.active .bn-icon{color:var(--ac)}
+.bn-icon{font-size:19px;line-height:1}
+.bn-badge{
+  position:absolute;top:6px;right:calc(50% - 14px);
+  min-width:16px;height:16px;border-radius:8px;
+  background:var(--ac);color:#fff;
+  font-size:9px;font-weight:700;
+  display:flex;align-items:center;justify-content:center;
+  padding:0 3px;
+}
+
+/* ── 10. Section header ──────────────────────────────────────── */
+.section-header{
+  display:flex;align-items:flex-start;
+  justify-content:space-between;gap:10px;
+  margin-bottom:14px;flex-wrap:wrap;min-width:0;
+}
+.section-title{
+  font-size:17px;font-weight:700;letter-spacing:-.3px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.section-sub{font-size:12px;color:var(--mu);margin-top:2px}
+
+/* ── 11. Live indicator ──────────────────────────────────────── */
+.live-indicator{
+  display:flex;align-items:center;gap:6px;
+  font-size:10px;color:var(--gr);font-weight:600;
+  padding:5px 8px;margin-bottom:4px;
+  white-space:nowrap;overflow:hidden;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TABLET  768px+ : slide-in overlay sidebar, hide bottom nav
+   ══════════════════════════════════════════════════════════════ */
+@media(min-width:768px){
+  .hamburger{display:flex}           /* keep hamburger on tablet */
+  .bottom-nav{display:none}          /* hide bottom nav */
+  .topbar{padding:0 20px}
+  .topbar-title{font-size:17px}
+  .content{padding:20px}
+  .stats-grid{gap:12px;margin-bottom:20px}
+  .stat-card{padding:14px 16px}
+  .stat-val{font-size:28px}
+}
+
+/* ══════════════════════════════════════════════════════════════
+   DESKTOP  1024px+ : persistent sidebar, no hamburger overlay
+   ══════════════════════════════════════════════════════════════ */
+@media(min-width:1024px){
+  #app{flex-direction:row}           /* side-by-side again */
+  .app-body{flex-direction:row}
+
+  /* Sidebar becomes in-flow, not fixed */
+  .sidebar{
+    position:relative;
+    transform:none !important;       /* override mobile translate */
+    width:220px;
+    flex-shrink:0;
+    box-shadow:none;
+    top:auto;left:auto;bottom:auto;
+  }
+  .sb-backdrop{display:none !important}
+
+  /* Hamburger hidden — sidebar always visible */
+  .hamburger{display:none}
+  .bottom-nav{display:none}
+
+  /* Full topbar */
+  .topbar{position:static;padding:0 24px;height:56px}
+  .topbar-sub{display:block}
+  .topbar-title{font-size:18px}
+
+  /* Content: full padding back */
+  .content{padding:24px}
+  .stat-card{padding:16px 18px}
+  .stat-val{font-size:30px}
+  .section-title{font-size:18px}
+}
+
+/* ══════════════════════════════════════════════════════════════
+   WIDE DESKTOP  1280px+ : 4-column stats
+   ══════════════════════════════════════════════════════════════ */
+@media(min-width:1280px){
+  .sidebar{width:240px}
+  .stats-grid{grid-template-columns:repeat(4,1fr)}
+  .stat-val{font-size:32px}
+  .content{padding:28px}
+}
+
+.crm-card.crm-mismatch{border-left:3px solid var(--rd);opacity:.85}
+.inv-mismatch-badge{
+  display:inline-flex;align-items:center;gap:4px;
+  padding:2px 8px;border-radius:20px;font-size:9px;font-weight:700;
+  background:rgba(220,38,38,.1);color:var(--rd);border:1px solid rgba(220,38,38,.2);
+  margin-left:6px;
+}
+
+/* ── Sold modal & conversion UI ──────────────────────────────────── */
+.sold-modal-overlay{
+  display:none;position:fixed;inset:0;z-index:700;
+  background:rgba(0,0,0,.7);backdrop-filter:blur(6px);
+  align-items:center;justify-content:center;padding:20px;
+}
+.sold-modal-overlay.open{display:flex;animation:fdi .2s ease}
+.sold-modal{
+  background:var(--s1);border:1px solid var(--b2);border-radius:20px;
+  padding:28px;width:100%;max-width:440px;
+  box-shadow:0 24px 80px rgba(0,0,0,.6);
+  animation:sci .18s ease;
+}
+.sold-header{text-align:center;margin-bottom:20px}
+.sold-trophy{font-size:44px;display:block;margin-bottom:10px}
+.sold-title{font-size:20px;font-weight:800;margin-bottom:4px}
+.sold-sub{font-size:13px;color:var(--mu)}
+
+.sold-score-ring{
+  width:72px;height:72px;border-radius:50%;
+  background:linear-gradient(135deg,var(--gr),#10b981);
+  display:flex;align-items:center;justify-content:center;
+  font-size:22px;font-weight:800;color:#fff;
+  margin:0 auto 10px;
+  box-shadow:0 6px 20px rgba(5,150,105,.4);
+}
+.sold-threshold{
+  font-size:11px;font-weight:600;padding:3px 10px;
+  border-radius:20px;display:inline-block;margin-bottom:14px;
+}
+.sold-thresh-hot {background:rgba(220,38,38,.1);color:var(--rd)}
+.sold-thresh-warm{background:rgba(217,119,6,.1);color:var(--or)}
+.sold-thresh-cold{background:var(--s2);color:var(--mu)}
+
+.sold-signals{
+  display:flex;flex-wrap:wrap;gap:6px;
+  justify-content:center;margin-bottom:16px;
+}
+.sold-signal{
+  padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;
+  background:rgba(5,150,105,.1);color:var(--gr);
+  border:1px solid rgba(5,150,105,.2);
+}
+
+.sold-price-row{
+  background:var(--s2);border:1px solid var(--b1);border-radius:11px;
+  padding:14px 16px;margin-bottom:16px;
+}
+.sold-price-label{font-size:10px;color:var(--mu);font-weight:700;
+  text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
+.sold-price-input{
+  width:100%;background:transparent;border:none;
+  font-size:22px;font-weight:800;color:var(--tx);
+  font-variant-numeric:tabular-nums;outline:none;
+}
+.sold-note-input{
+  width:100%;background:transparent;border:none;
+  font-size:13px;color:var(--tx);outline:none;resize:none;
+  min-height:44px;
+}
+</style>
+  <link rel="manifest" href="/manifest.json"/>
+  <meta name="theme-color" content="#1a56db"/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="AutoDrive"/>
+  <link rel="apple-touch-icon" href="/icons/icon.png"/>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div class="login-logo">
+      <div class="login-logo-mark">AD</div>
+      <div>
+        <div class="login-logo-name">AutoDrive</div>
+        <div class="login-logo-badge">Dealer Console</div>
+      </div>
+    </div>
+    <div class="login-title">Dealer Sign In</div>
+    <div class="login-sub">Sign in with your dealer email and password.</div>
+    <div class="login-group">
+      <label class="login-label">Email</label>
+      <input class="login-input" id="login-email" type="email" placeholder="you@dealership.com"
+        onkeydown="if(event.key==='Enter')document.getElementById('login-pw').focus()"/>
+    </div>
+    <div class="login-group">
+      <label class="login-label">Password</label>
+      <input class="login-input" id="login-pw" type="password" placeholder="Password"
+        onkeydown="if(event.key==='Enter')doLogin()"/>
+    </div>
+    <button class="login-btn" id="login-btn" onclick="doLogin()">Sign In →</button>
+    <div style="text-align:center;margin-top:10px">
+      <button onclick="showForgotPassword()" style="background:none;border:none;color:var(--mu);font-size:12px;cursor:pointer;text-decoration:underline">Forgot password?</button>
+    </div>
+    <div class="login-err" id="login-err">❌ Invalid email or password.</div>
+  </div>
+</div>
+
+<!-- MAIN APP (hidden until login) -->
+<div id="app" style="display:none">
+
+  <!-- ── STICKY TOP HEADER ─────────────────────────────────────── -->
+  <div class="topbar" id="topbar">
+    <!-- Hamburger: opens sidebar on mobile/tablet -->
+    <button class="hamburger" id="hamburger-btn" onclick="openSidebar()" aria-label="Open menu">☰</button>
+
+    <div class="topbar-left">
+      <div>
+        <div class="topbar-title" id="page-title">CRM</div>
+        <div class="topbar-sub" id="page-sub">Lead priority queue</div>
+      </div>
+    </div>
+
+    <div class="topbar-right">
+      <div class="sync-badge" id="sync-badge">● Live</div>
+      <span id="mismatch-badge" style="display:none;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:700;background:rgba(220,38,38,.1);color:var(--rd);border:1px solid rgba(220,38,38,.2);cursor:pointer" onclick="crmFilterMode='price_mismatch';showPage('crm')" title="Leads with price mismatch"></span>
+      <button class="refresh-btn" onclick="refreshData()" title="Refresh">↻</button>
+      <button class="btn-sm btn-primary" id="page-action-btn" onclick="handlePageAction()" style="white-space:nowrap"></button>
+    </div>
+  </div>
+
+  <!-- ── BODY ROW ───────────────────────────────────────────────── -->
+  <div class="app-body">
+
+    <!-- Backdrop (mobile overlay) -->
+    <div class="sb-backdrop" id="sb-backdrop" onclick="closeSidebar()"></div>
+
+    <!-- ── SIDEBAR ──────────────────────────────────────────────── -->
+    <div class="sidebar" id="sidebar">
+      <div class="sb-header">
+        <div class="sb-logo">
+          <div class="sb-mark">AD</div>
+          <div>
+            <div class="sb-name">AutoDrive</div>
+            <div class="sb-dealer">Dealer Portal</div>
+          </div>
+        </div>
+        <div class="dealer-badge">
+          <div class="dealer-avatar" id="dealer-av">JD</div>
+          <div>
+            <div class="dealer-info-name" id="dealer-name">Jane Doe</div>
+            <div class="dealer-info-role" id="dealer-role">Sales Manager</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sb-nav">
+        <div class="live-indicator">
+          <span class="live-dot"></span>
+          <span class="live-indicator-text">Live — synced with buyer app</span>
+        </div>
+        <div class="sb-section">
+          <div class="sb-section-label">Main</div>
+          <button class="sb-link active" onclick="showPage('crm');closeSidebar()" id="nav-crm"><span class="sb-link-icon">🎯</span>CRM <span class="sb-badge" id="crm-badge" style="display:none">0</span></button>
+          <button class="sb-link" onclick="showPage('leads');closeSidebar()" id="nav-leads"><span class="sb-link-icon">◈</span>Pipeline <span class="sb-badge" id="leads-badge">0</span></button>
+          <button class="sb-link" onclick="showPage('calendar');closeSidebar()" id="nav-calendar"><span class="sb-link-icon">📅</span>Appointments <span class="sb-badge" id="appt-badge" style="background:var(--or)">0</span></button>
+          <button class="sb-link" onclick="showPage('inventory');closeSidebar()" id="nav-inventory"><span class="sb-link-icon">🚗</span>Inventory</button>
+          <button class="sb-link" onclick="showPage('messages');closeSidebar()" id="nav-messages"><span class="sb-link-icon">💬</span>Messages <span class="sb-badge" id="msg-badge" style="display:none">0</span></button>
+          <button class="sb-link" onclick="showPage('demand');closeSidebar()" id="nav-demand"><span class="sb-link-icon">🔥</span>Demand</button>
+          <button class="sb-link" onclick="showPage('analytics');closeSidebar()" id="nav-analytics"><span class="sb-link-icon">📊</span>Analytics</button>
+        </div>
+      </div>
+
+      <div class="sb-footer">
+        <button class="sb-logout" onclick="doLogout()"><span style="font-size:16px">⎋</span><span>Sign Out</span></button>
+      </div>
+    </div>
+
+    <!-- ── MAIN CONTENT ──────────────────────────────────────────── -->
+    <div class="main" style="min-width:0">
+      <div class="content" id="content"></div>
+    </div>
+
+  </div><!-- /app-body -->
+
+  <!-- ── BOTTOM NAVIGATION (mobile) ──────────────────────────── -->
+  <nav class="bottom-nav" id="bottom-nav">
+    <button class="bn-item active" id="bn-crm" onclick="showPage('crm')">
+      <span class="bn-icon">🎯</span>CRM
+    </button>
+    <button class="bn-item" id="bn-leads" onclick="showPage('leads')">
+      <span class="bn-icon">◈</span>Pipeline
+      <span class="bn-badge" id="bn-leads-badge" style="display:none">0</span>
+    </button>
+    <button class="bn-item" id="bn-calendar" onclick="showPage('calendar')">
+      <span class="bn-icon">📅</span>Appts
+    </button>
+    <button class="bn-item" id="bn-inventory" onclick="showPage('inventory')">
+      <span class="bn-icon">🚗</span>Inventory
+    </button>
+    <button class="bn-item" id="bn-more" onclick="openSidebar()">
+      <span class="bn-icon">☰</span>More
+    </button>
+  </nav>
+
+</div><!-- /#app -->
+
+
+<!-- LEAD DETAIL DRAWER -->
+<div class="drawer-overlay" id="drawer-overlay" onclick="closeDrawer()"></div>
+<div class="drawer" id="lead-drawer">
+  <div class="drawer-header">
+    <div class="drawer-title" id="drawer-title">Lead Detail</div>
+    <button class="drawer-close" onclick="closeDrawer()">✕</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<!-- ADD VEHICLE MODAL -->
+<div class="modal-overlay" id="add-vehicle-modal">
+  <div class="modal" style="max-width:520px;max-height:90vh;overflow-y:auto">
+    <div class="modal-title" id="add-modal-title">Add Vehicle to Inventory</div>
+    <div class="modal-sub">This vehicle will appear in the buyer app swipe deck.</div>
+    <div id="inv-form-slot" style="margin:16px 0"></div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-ghost" onclick="closeAddModal()">Cancel</button>
+      <button class="btn-sm btn-primary" id="add-vehicle-submit" onclick="addVehicleFromForm()">Add to Inventory</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div id="toast-container"></div>
+
+<script>
+// ── Mobile sidebar (slide-over) ───────────────────────────────────
+function openSidebar() {
+  document.getElementById('sidebar').classList.add('open');
+  document.getElementById('sb-backdrop').classList.add('show');
+  document.body.style.overflow = 'hidden';
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('sb-backdrop').classList.remove('show');
+  document.body.style.overflow = '';
+}
+// Close on Escape
+document.addEventListener('keydown', e => { if(e.key==='Escape') closeSidebar(); });
+
+// ── Bottom nav active state sync ─────────────────────────────────
+const BN_PAGES = ['crm','leads','calendar','inventory'];
+function syncBottomNav(page) {
+  document.querySelectorAll('.bn-item').forEach(b => b.classList.remove('active'));
+  const bn = document.getElementById('bn-' + page);
+  if (bn) bn.classList.add('active');
+}
+
+
+
+// ═══════════════════════════════════════════════════════════════════════
+// DATA HELPERS — reads shared localStorage written by buyer app
+// ═══════════════════════════════════════════════════════════════════════
+const lsGet = (k,d) => { try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch{return d} };
+const lsSet = (k,v) => { try{localStorage.setItem(k,JSON.stringify(v))}catch{} };
+
+// Auth via Firebase Email/Password — see FIREBASE_SETUP.md
+
+const BASE_INVENTORY = [
+  {id:1,year:2024,make:"Toyota",model:"RAV4 XLE",trim:"XLE Premium",price:34500,monthly:498,mileage:"New",body:"SUV",fuel:"Gas",color:"Midnight Blue",status:"available",matches:0,views:0,emoji:"🚙"},
+  {id:2,year:2024,make:"Ford",model:"F-150 Lariat",trim:"Lariat 4x4",price:52800,monthly:762,mileage:"New",body:"Truck",fuel:"Gas",color:"Iconic Silver",status:"available",matches:0,views:0,emoji:"🛻"},
+  {id:3,year:2024,make:"Tesla",model:"Model 3",trim:"Long Range",price:41990,monthly:599,mileage:"New",body:"Sedan",fuel:"Electric",color:"Pearl White",status:"available",matches:0,views:0,emoji:"⚡"},
+  {id:4,year:2023,make:"Honda",model:"Accord Sport",trim:"Sport 2.0T",price:28900,monthly:415,mileage:"12,400 mi",body:"Sedan",fuel:"Gas",color:"Sonic Gray",status:"available",matches:0,views:0,emoji:"🚗"},
+  {id:5,year:2023,make:"BMW",model:"X5 xDrive40i",trim:"M Sport",price:68500,monthly:988,mileage:"8,200 mi",body:"SUV",fuel:"Gas",color:"Alpine White",status:"reserved",matches:0,views:0,emoji:"🏎️"},
+  {id:6,year:2024,make:"Chevrolet",model:"Bolt EV",trim:"2LT",price:27495,monthly:395,mileage:"New",body:"Hatchback",fuel:"Electric",color:"Oasis Blue",status:"available",matches:0,views:0,emoji:"⚡"},
+  {id:7,year:2024,make:"Mazda",model:"CX-5 Carbon",trim:"Carbon Edition",price:38300,monthly:550,mileage:"New",body:"SUV",fuel:"Gas",color:"Polymetal Gray",status:"available",matches:0,views:0,emoji:"🚙"},
+  {id:8,year:2024,make:"Jeep",model:"Wrangler Rubicon",trim:"Rubicon 4xe",price:58200,monthly:840,mileage:"New",body:"SUV",fuel:"Hybrid",color:"Firecracker Red",status:"available",matches:0,views:0,emoji:"🚜"},
+  {id:9,year:2024,make:"Subaru",model:"Outback Onyx",trim:"Onyx Edition",price:35395,monthly:509,mileage:"New",body:"Wagon",fuel:"Gas",color:"Crystal Black",status:"sold",matches:0,views:0,emoji:"🚙"},
+  {id:10,year:2024,make:"Hyundai",model:"Tucson PHEV",trim:"SEL Convenience",price:36550,monthly:526,mileage:"New",body:"SUV",fuel:"Hybrid",color:"Hampton Gray",status:"available",matches:0,views:0,emoji:"🔋"},
+  {id:11,year:2024,make:"Porsche",model:"Cayenne S",trim:"S",price:89900,monthly:1295,mileage:"New",body:"SUV",fuel:"Gas",color:"Jet Black",status:"available",matches:0,views:0,emoji:"🏎️"},
+  {id:12,year:2023,make:"Rivian",model:"R1T Adventure",trim:"Adventure",price:69900,monthly:1008,mileage:"3,200 mi",body:"Truck",fuel:"Electric",color:"Forest Green",status:"available",matches:0,views:0,emoji:"🛻"},
+];
+
+let currentUser = null;
+let activePage  = 'leads';
+let activeDrawerLead = null;
+let inventory = lsGet('dlr_inventory', BASE_INVENTORY);
+
+function getLeads() { return lsGet('ad_dealer_leads',[]); }
+
+// ═══════════════════════════════════════════════════════════════════
+// GLOBAL FILTER — cross-references leads against live inventory
+//
+// This is the single source of truth for lead validity.
+// Equivalent to React's useMemo([inventory, leads]):
+//   • Reads both datasets fresh on every call
+//   • All price comparisons use Number() — no string coercion bugs
+//   • Never mutates leads; returns annotated copies
+//   • Called by renderCRM, renderLeads, updateBadges, renderAnalytics
+// ═══════════════════════════════════════════════════════════════════
+
+function computeFilteredLeads() {
+  const rawLeads  = getLeads();       // fresh read from localStorage
+  const rawInv    = inventory;        // module-level, updated by saveVehicleEdit
+
+  return rawLeads.map(lead => {
+    // ── 1. Find the live inventory record for this lead ────────────
+    const liveCar = rawInv.find(v => String(v.id) === String(lead.carId));
+
+    // ── 2. Determine buyer's effective max budget (always Number) ──
+    // Priority: budgetMax field (new) → parse display string (old) → 0 (no limit)
+    let buyerMax = Number(lead.budgetMax) || 0;
+    if (!buyerMax && typeof lead.budget === 'string') {
+      const m = lead.budget.match(/[–-]\$?([\d,]+)/);
+      if (m) buyerMax = Number(m[1].replace(/,/g, '')) || 0;
+    }
+
+    // revD CASH budget takes precedence if higher
+    const revDMax      = Number(lead.revDMaxBudget) || 0;
+    const effectiveMax = revDMax > 0 ? Math.max(buyerMax, revDMax) : buyerMax;
+
+    // ── 3. Compute live price mismatch ────────────────────────────
+    // livePrice: always Number, always fresh from inventory
+    const livePrice    = liveCar ? Number(liveCar.price) || 0 : 0;
+    const noLimit      = effectiveMax === 0;
+    const inBudget     = noLimit || livePrice <= effectiveMax;
+
+    // ── 4. Detect vehicle removed from inventory ──────────────────
+    const vehicleGone  = !liveCar || liveCar.status === 'sold';
+
+    // ── 5. Return annotated copy — never mutates the stored lead ──
+    return {
+      ...lead,
+      // Live-computed fields (override any stale stored values)
+      _livePrice:      livePrice,
+      _inBudget:       inBudget,
+      _vehicleGone:    vehicleGone,
+      _effectiveMax:   effectiveMax,
+      // priceMismatch: true if car exists but price is now out of range
+      priceMismatch:   !vehicleGone && !inBudget,
+      // Derived status: if stored status is fine but price broke, override display
+      _displayStatus:  (!vehicleGone && !inBudget)
+                         ? 'price_mismatch'
+                         : vehicleGone
+                           ? 'archived'
+                           : (lead.status || 'new'),
+    };
+  });
+}
+
+// ── Pipeline summary — the source of truth for all badge counts ───────
+// Replaces the raw leads.length count everywhere.
+function getPipelineCounts() {
+  const leads = computeFilteredLeads();
+  return {
+    total:         leads.length,
+    new:           leads.filter(l => l._displayStatus === 'new').length,
+    contacted:     leads.filter(l => l._displayStatus === 'contacted').length,
+    ready:         leads.filter(l => l.intentLevel === 'ready').length,
+    sold:          leads.filter(l => l._displayStatus === 'sold').length,
+    priceMismatch: leads.filter(l => l.priceMismatch).length,
+    vehicleGone:   leads.filter(l => l._vehicleGone).length,
+  };
+}
+
+function getAppts() {
+  const leads = getLeads();
+  const appts = [];
+  leads.forEach(l=>{ if(l.appointments&&l.appointments.length>0) l.appointments.forEach(a=>appts.push({...a,lead:l})); });
+  return appts;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LOGIN
+// ═══════════════════════════════════════════════════════════════════════
+async function doLogin() {
+  const email = document.getElementById('login-email').value.trim();
+  const pw    = document.getElementById('login-pw').value;
+  const btn   = document.getElementById('login-btn');
+  const errEl = document.getElementById('login-err');
+  errEl.style.display = 'none';
+  if (!email || !pw) { errEl.textContent='Please enter email and password.'; errEl.style.display='block'; return; }
+  btn.textContent = 'Signing in…'; btn.disabled = true;
+  try {
+    await initFirebase();  // loads Firebase SDKs
+    const result = await firebase.auth().signInWithEmailAndPassword(email, pw);
+    await onAuthSuccess(result.user);
+  } catch(e) {
+    errEl.textContent = firebaseAuthError(e.code);
+    errEl.style.display = 'block';
+  } finally {
+    btn.textContent = 'Sign In →'; btn.disabled = false;
+  }
+}
+
+function firebaseAuthError(code) {
+  const map = {
+    'auth/user-not-found':    'No account found with that email.',
+    'auth/wrong-password':    'Incorrect password.',
+    'auth/invalid-email':     'Please enter a valid email address.',
+    'auth/too-many-requests': 'Too many attempts — try again in a few minutes.',
+    'auth/network-request-failed': 'Network error — check your connection.',
+  };
+  return map[code] || 'Sign-in failed. Please try again.';
+}
+
+function showForgotPassword() {
+  const email = document.getElementById('login-email').value.trim();
+  if (!email) { alert('Enter your email address first, then click Forgot Password.'); return; }
+  firebase.auth().sendPasswordResetEmail(email)
+    .then(() => { showToast('Password reset email sent — check your inbox', 'success'); })
+    .catch(e => { showToast('Could not send reset email: ' + e.message, 'error'); });
+}
+
+async function onAuthSuccess(user) {
+  // Load user profile from Firestore users/{uid}
+  let profile = { name: user.displayName || user.email, role: 'rep', dealer_id: 'metro_auto' };
+  try {
+    const snap = await fbDb.collection('users').doc(user.uid).get();
+    if (snap.exists) Object.assign(profile, snap.data());
+  } catch(e) { console.warn('Could not load user profile', e); }
+
+  currentUser = { ...profile, uid: user.uid, email: user.email };
+  fbUid = user.uid;
+
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('app').style.display = 'flex';
+  const initials = profile.name.split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('dealer-av').textContent   = initials;
+  document.getElementById('dealer-name').textContent = profile.name;
+  document.getElementById('dealer-role').textContent = profile.role || 'Sales Rep';
+
+  // Load inventory from Firestore
+  await loadInventoryFromFirestore(profile.dealer_id);
+  // Subscribe to live leads
+  subscribeToLeads(profile.dealer_id);
+  showPage('crm');
+}
+
+// Persist auth state — auto sign-in on page reload
+function checkAuthState() {
+  if (FB_CONFIG.apiKey.startsWith('REPLACE')) { return; }
+  initFirebase().then(() => {
+    firebase.auth().onAuthStateChanged(user => {
+      if (user) onAuthSuccess(user);
+    });
+  });
+}
+
+function doLogout() {
+  currentUser=null;
+  document.getElementById('login-screen').style.display='flex';
+  document.getElementById('app').style.display='none';
+  document.getElementById('login-code').value='';
+  document.getElementById('login-pin').value='';
+  document.getElementById('login-err').style.display='none';
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════════════════════════════════
+const PAGE_CONFIG = {
+  crm:       {title:'CRM',               sub:'Lead priority queue with heat map',             action:''},
+  leads:     {title:'Lead Pipeline',      sub:'High-intent buyers matched to your inventory',  action:'Export'},
+  calendar:  {title:'Appointments',       sub:'Scheduled test drives and visits',               action:'+ New Appointment'},
+  inventory: {title:'Inventory',          sub:'Manage your vehicle listings',                   action:'+ Add Vehicle'},
+  messages:  {title:'Messages',        sub:'Live buyer conversations',                       action:''},
+  demand:    {title:'Demand Insights',   sub:'Vibe tags trending in your market',             action:'Download'},
+  analytics: {title:'Analytics',          sub:'Conversion metrics and performance insights',    action:'Download Report'},
+};
+
+function showPage(page) {
+  activePage = page;
+  syncBottomNav(page);
+  document.querySelectorAll('.sb-link').forEach(l=>l.classList.remove('active'));
+  document.getElementById('nav-'+page)?.classList.add('active');
+  const cfg = PAGE_CONFIG[page];
+  document.getElementById('page-title').textContent = cfg.title;
+  document.getElementById('page-sub').textContent = cfg.sub;
+  document.getElementById('page-action-btn').textContent = cfg.action;
+  updateBadges();
+  const renders = {crm:renderCRM, leads:renderLeads, calendar:renderCalendar, inventory:renderInventory, analytics:renderAnalytics, messages:renderMessages, demand:renderDemand};
+  renders[page]?.();
+}
+
+function handlePageAction() {
+  if(activePage==='inventory') {
+    const slot = document.getElementById('inv-form-slot');
+    if (slot && typeof renderInventoryForm !== 'undefined') {
+      newVehicleVibes = []; newVehicleImageFile = null; newVehicleImageUrl = '';
+      slot.innerHTML = renderInventoryForm();
+    }
+    document.getElementById('add-vehicle-modal').classList.add('open');
+  }
+  else showToast('Feature coming soon','info');
+}
+
+function refreshData() {
+  showPage(activePage);
+  showToast('Data refreshed','success');
+}
+
+function updateBadges() {
+  // getPipelineCounts() derives counts from computeFilteredLeads()
+  // so badges always reflect live price/inventory state
+  const counts  = getPipelineCounts();
+  const appts   = getAppts();
+  const leadsEl = document.getElementById('leads-badge');
+  const apptEl  = document.getElementById('appt-badge');
+  const bnLeads = document.getElementById('bn-leads-badge');
+  const mmEl    = document.getElementById('mismatch-badge');
+  if (leadsEl) leadsEl.textContent = counts.total;
+  if (apptEl)  apptEl.textContent  = appts.length;
+  if (bnLeads) {
+    bnLeads.textContent   = counts.new;
+    bnLeads.style.display = counts.new > 0 ? 'flex' : 'none';
+  }
+  // Show mismatch warning dot in topbar if any leads are out of budget
+  if (mmEl) {
+    mmEl.style.display    = counts.priceMismatch > 0 ? 'inline-flex' : 'none';
+    mmEl.textContent      = `⚠️ ${counts.priceMismatch}`;
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LEADS PAGE
+// ═══════════════════════════════════════════════════════════════════════
+function renderLeads(filter='all', search='') {
+  // Same computed source as renderCRM — no separate invalidation needed
+  const leads = computeFilteredLeads();
+  const filtered = leads.filter(l=>{
+    if(filter==='price_mismatch') return l.priceMismatch === true;
+    if(filter==='all') {
+      // show all — including mismatched (sorted to bottom below)
+    } else if(['new','contacted','sold','archived'].includes(filter)) {
+      if (l._displayStatus !== filter) return false;
+    } else if(l.intentLevel !== filter) return false;
+    if(search && !`${l.car} ${l.userName||''}`.toLowerCase().includes(search.toLowerCase())) return false;
+    return true;
+  }).sort((a,b)=>{
+    // Price mismatches always sort to bottom
+    if(a.priceMismatch && !b.priceMismatch) return 1;
+    if(!a.priceMismatch && b.priceMismatch) return -1;
+    return (Number(b.leadQuality)||0) - (Number(a.leadQuality)||0);
+  });
+
+  const qColor = q => q>=80?'var(--gr)':q>=50?'var(--or)':'var(--mu)';
+  const intentMap = {browsing:{label:'🔭 Browsing',cls:'badge-browsing'},interested:{label:'⚡ Interested',cls:'badge-interested'},ready:{label:'🚗 Ready',cls:'badge-ready'}};
+
+  document.getElementById('content').innerHTML = `
+  <div class="stats-grid">
+    ${[
+      {label:'Total Leads',val:leads.length,sub:'All active leads',cls:'sc-blue',trend:'+12%'},
+      {label:'Ready Intent',val:leads.filter(l=>l.intentLevel==='ready').length,sub:'Showroom ready',cls:'sc-green',trend:'+8%'},
+      {label:'Interested',val:leads.filter(l=>l.intentLevel==='interested').length,sub:'Active interest',cls:'sc-orange',trend:'+5%'},
+      {label:'Avg Quality',val:leads.length?Math.round(leads.reduce((a,l)=>a+l.leadQuality,0)/leads.length):0,sub:'Lead quality score',cls:'sc-purple',trend:'+3pt'},
+    ].map(s=>`<div class="stat-card ${s.cls}">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-val">${s.val}</div>
+      <div class="stat-sub">${s.sub} <span class="stat-trend trend-up">${s.trend}</span></div>
+    </div>`).join('')}
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">All Leads</div>
+    <div class="section-actions">
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input class="search-input" placeholder="Search leads…" id="lead-search" oninput="renderLeads(document.getElementById('lead-filter').value,this.value)" value="${search}"/>
+      </div>
+      <select class="filter-select" id="lead-filter" onchange="renderLeads(this.value,document.getElementById('lead-search').value)">
+        <option value="all" ${filter==='all'?'selected':''}>All Intent</option>
+        <option value="browsing" ${filter==='browsing'?'selected':''}>🔭 Browsing</option>
+        <option value="interested" ${filter==='interested'?'selected':''}>⚡ Interested</option>
+        <option value="ready" ${filter==='ready'?'selected':''}>🚗 Ready</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="table-card">
+    ${filtered.length===0?`<div class="empty-box"><div class="ei">📭</div><h3>No leads yet</h3><p>Leads appear here in real-time when buyers save vehicles in the AutoDrive buyer app.</p></div>`:`
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Buyer</th>
+            <th>Vehicle</th>
+            <th>Intent</th>
+            <th>Quality Score</th>
+            <th>Budget</th>
+            <th>Financing</th>
+            <th>Trade-In</th>
+            <th>Saved</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${filtered.map(lead=>{
+            const ic = intentMap[lead.intentLevel]||intentMap.browsing;
+            const q = lead.leadQuality;
+            const qc = qColor(q);
+            const ago = timeAgo(lead.savedAt);
+            const hasFP = lead.fastPassComplete;
+            return `<tr>
+              <td>
+                <div class="avatar-cell">
+                  <div class="avatar">${(lead.userName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}</div>
+                  <div><div class="td-name">${lead.userName||'Anonymous'}</div><div class="td-sub">${lead.userId||'—'}</div></div>
+                </div>
+              </td>
+              <td><div class="td-name">${lead.car}</div>${hasFP?'<div class="td-sub" style="color:var(--gr)">🏁 Fast-Pass complete</div>':''}</td>
+              <td><span class="badge ${ic.cls}">${ic.label}</span></td>
+              <td>
+                <div class="quality-score">
+                  <div class="qs-bar"><div class="qs-fill" style="width:${q}%;background:${qc}"></div></div>
+                  <span class="qs-num" style="color:${qc}">${q}</span>
+                </div>
+              </td>
+              <td><span class="font-mono" style="font-size:12px">${lead.budget||'—'}</span></td>
+              <td><span style="text-transform:capitalize">${lead.financing||'—'}</span></td>
+              <td><span style="text-transform:capitalize">${lead.tradeIn||'none'}</span></td>
+              <td style="color:var(--mu);font-size:12px">${ago}</td>
+              <td>
+                <div class="action-btns">
+                  <button class="act-btn" onclick="openDrawer(${lead.id})">View</button>
+                  ${lead.intentLevel==='ready'?`<button class="act-btn green" onclick="openDrawer(${lead.id})">📞 Contact</button>`:`<button class="act-btn primary" onclick="openDrawer(${lead.id})">Details →</button>`}
+              <button class="act-btn" onclick="event.stopPropagation();openChatFromLead(${lead.id})" title="Open chat">💬</button>
+                </div>
+              </td>
+            </tr>`;
+          }).join('')}
+        </tbody>
+      </table>
+    </div>`}
+  </div>`;
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// CALENDAR PAGE
+// ═══════════════════════════════════════════════════════════════════════
+function renderCalendar() {
+  const appts = getAppts();
+  const today = new Date();
+  const todayD = today.getDate();
+  const days = Array.from({length:30},(_,i)=>{
+    const d = new Date(today); d.setDate(today.getDate()+i-today.getDay());
+    return d;
+  });
+  const weekDays = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+  // Build a simple 2-week view
+  const calDays = Array.from({length:14},(_,i)=>{
+    const d = new Date(today); d.setDate(today.getDate()-today.getDay()+i);
+    return d;
+  });
+
+  const apptsByDay = {};
+  appts.forEach(a=>{
+    const label = a.time||'';
+    const key = label.includes('Tomorrow')?'1':label.includes('Wed')?'3':label.includes('Thu')?'4':label.includes('Fri')?'5':'2';
+    if(!apptsByDay[key]) apptsByDay[key]=[];
+    apptsByDay[key].push(a);
+  });
+
+  document.getElementById('content').innerHTML = `
+  <div class="stats-grid stats-3">
+    ${[
+      {label:'Total Appointments',val:appts.length,cls:'sc-blue'},
+      {label:'Confirmed',val:appts.filter(a=>a.status==='CONFIRMED').length,cls:'sc-green'},
+      {label:'Pending',val:appts.filter(a=>a.status==='PENDING').length,cls:'sc-orange'},
+    ].map(s=>`<div class="stat-card ${s.cls}"><div class="stat-label">${s.label}</div><div class="stat-val">${s.val}</div></div>`).join('')}
+  </div>
+
+  <div class="section-header"><div class="section-title">This Week</div></div>
+  <div class="calendar-grid" style="margin-bottom:24px">
+    ${weekDays.map(d=>`<div class="cal-header">${d}</div>`).join('')}
+    ${calDays.slice(0,7).map((d,i)=>{
+      const dayAppts = apptsByDay[String(i)]||[];
+      const isToday = d.getDate()===todayD && d.getMonth()===today.getMonth();
+      return `<div class="cal-day ${isToday?'today':''} ${dayAppts.length?'has-appt':''}">
+        <div class="cal-day-num">${d.getDate()}</div>
+        ${dayAppts.map(a=>`<div class="cal-appt ${a.status==='PENDING'?'pending':''}">${a.lead?.userName||'Buyer'}</div>`).join('')}
+      </div>`;
+    }).join('')}
+  </div>
+
+  <div class="section-header"><div class="section-title">All Appointments</div></div>
+  <div class="appt-list">
+    ${appts.length===0?`<div class="empty-box"><div class="ei">📅</div><h3>No appointments yet</h3><p>Appointments appear when buyers complete the Fast-Pass flow in the buyer app.</p></div>`:
+    appts.map(a=>`<div class="appt-item">
+      <div class="appt-time">📅 ${a.time||'TBD'}</div>
+      <div class="appt-info">
+        <div class="appt-car">${a.lead?.car||'Unknown Vehicle'}</div>
+        <div class="appt-buyer">${a.lead?.userName||'Anonymous'} · ${a.type||'TEST_DRIVE'}</div>
+      </div>
+      <span class="badge badge-${(a.status||'PENDING').toLowerCase()}">${a.status||'PENDING'}</span>
+      <div class="action-btns">
+        <button class="act-btn" onclick="showToast('Reminder sent to buyer','success')">Send Reminder</button>
+        <button class="act-btn primary" onclick="confirmApptStatus('${a.lead?.userId}')">Confirm ✓</button>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function confirmApptStatus(uid) {
+  showToast('Appointment confirmed — buyer notified','success');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// INVENTORY PAGE
+// ═══════════════════════════════════════════════════════════════════════
+function renderInventory() {
+  const leads = getLeads();
+  const inv = inventory.map(v=>({
+    ...v,
+    price:      Number(v.price)   || 0,   // normalise on every read
+    monthly:    Number(v.monthly) || Math.round((Number(v.price)||0) / 60),
+    matchCount: leads.filter(l=>l.carId===v.id).length,
+    mismatchCount: leads.filter(l=>l.carId===v.id && l.priceMismatch).length,
+  }));
+
+  const statusMap = {available:'badge-available',reserved:'badge-reserved',sold:'badge-sold'};
+
+  document.getElementById('content').innerHTML = `
+  <div class="stats-grid stats-3">
+    ${[
+      {label:'Total Vehicles',val:inv.length,cls:'sc-blue'},
+      {label:'Available',val:inv.filter(v=>v.status==='available').length,cls:'sc-green'},
+      {label:'Sold / Reserved',val:inv.filter(v=>v.status!=='available').length,cls:'sc-orange'},
+    ].map(s=>`<div class="stat-card ${s.cls}"><div class="stat-label">${s.label}</div><div class="stat-val">${s.val}</div></div>`).join('')}
+  </div>
+
+  <div class="section-header">
+    <div class="section-title">All Vehicles</div>
+    <div class="section-actions">
+      <select class="filter-select" onchange="filterInventory(this.value)">
+        <option value="all">All Status</option>
+        <option value="available">Available</option>
+        <option value="reserved">Reserved</option>
+        <option value="sold">Sold</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="inv-grid">
+    ${inv.map(v=>`<div class="inv-card">
+      <div class="inv-img"><span>${v.emoji||'🚗'}</span>
+        <div style="position:absolute;top:8px;right:8px"><span class="badge ${statusMap[v.status]||'badge-available'}" style="text-transform:capitalize">${v.status}</span></div>
+        ${v.matchCount>0?`<div style="position:absolute;top:8px;left:8px;background:var(--acl);color:var(--ac);padding:2px 8px;border-radius:10px;font-size:10px;font-weight:700">${v.matchCount} match${v.matchCount!==1?'es':''}</div>`:''}
+      </div>
+      <div class="inv-body">
+        <div class="inv-year">${v.year} · ${v.mileage||'New'} · ${v.color||''}</div>
+        <div class="inv-name">${v.make} ${v.model}</div>
+        <div class="inv-price">$${v.price.toLocaleString()}${v.mismatchCount>0?`<span class="inv-mismatch-badge">⚠️ ${v.mismatchCount} mismatch</span>`:''}</div>
+        <div class="inv-tags">
+          <span class="inv-tag">${v.body}</span>
+          <span class="inv-tag">${v.fuel}</span>
+          <span class="inv-tag">$${v.monthly||Math.round(v.price/60)}/mo</span>
+        </div>
+        <div class="inv-footer">
+          <div class="inv-stats">${v.matchCount} buyer match${v.matchCount!==1?'es':''}</div>
+          <div style="display:flex;gap:6px">
+            <button class="inv-edit-btn" onclick="cycleStatus(${v.id})">Change Status</button>
+            <button class="inv-edit-btn" onclick="editVehicle(${v.id})">Edit</button>
+          </div>
+        </div>
+      </div>
+    </div>`).join('')}
+  </div>`;
+}
+
+function cycleStatus(id) {
+  const v = inventory.find(x=>x.id===id);
+  if(!v) return;
+  const cycle = {available:'reserved',reserved:'sold',sold:'available'};
+  v.status = cycle[v.status]||'available';
+  lsSet('dlr_inventory',inventory);
+  renderInventory();
+  showToast(`Status updated to ${v.status}`,'success');
+}
+
+function filterInventory(status) {
+  const inv = status==='all'?inventory:inventory.filter(v=>v.status===status);
+  // simple re-render with filter
+  renderInventory();
+}
+
+function addVehicle() {
+  const year=document.getElementById('nv-year').value;
+  const make=document.getElementById('nv-make').value;
+  const model=document.getElementById('nv-model').value;
+  const price=parseFloat(document.getElementById('nv-price').value)||0;
+  if(!year||!make||!model||!price){showToast('Please fill required fields','error');return;}
+  const nv={
+    id:Date.now(),year:parseInt(year),make,model,
+    trim:document.getElementById('nv-trim').value||'',
+    price,monthly:Math.round(price/60),
+    mileage:document.getElementById('nv-miles').value||'New',
+    body:document.getElementById('nv-body').value,
+    fuel:document.getElementById('nv-fuel').value,
+    color:'',status:'available',matches:0,views:0,
+    vin:document.getElementById('nv-vin').value,emoji:'🚗'
+  };
+  inventory.unshift(nv);
+  lsSet('dlr_inventory',inventory);
+  closeAddModal();
+  renderInventory();
+  showToast(`${make} ${model} added to inventory`,'success');
+}
+
+function closeAddModal(){document.getElementById('add-vehicle-modal').classList.remove('open')}
+
+// ═══════════════════════════════════════════════════════════════════════
+// ANALYTICS PAGE
+// ═══════════════════════════════════════════════════════════════════════
+function renderAnalytics() {
+  const leads = computeFilteredLeads();
+  const appts = getAppts();
+  const readyLeads = leads.filter(l=>l.intentLevel==='ready').length;
+  const intLeads = leads.filter(l=>l.intentLevel==='interested').length;
+  const browsing = leads.filter(l=>l.intentLevel==='browsing').length;
+  const convRate = leads.length?Math.round((appts.length/leads.length)*100):0;
+  const avgQ = leads.length?Math.round(leads.reduce((a,l)=>a+l.leadQuality,0)/leads.length):0;
+
+  // Real conversion insights from closed deals
+  const insights = getConversionInsights();
+
+  // Mock weekly data (replaced by real data once conversions accumulate)
+  const weeks = ['Week 1','Week 2','Week 3','Week 4'];
+  const weekData = [leads.length?Math.max(1,Math.floor(leads.length*.6)):3, leads.length?Math.max(1,Math.floor(leads.length*.75)):5, leads.length?Math.max(1,Math.floor(leads.length*.85)):7, leads.length||8];
+  const maxW = Math.max(...weekData,1);
+
+  document.getElementById('content').innerHTML = `
+  <!-- VIDEO UPLOAD PROMPTS -->
+  ${getVideoPrompts().length > 0 ? `<div style="margin-bottom:16px">
+    <div class="section-header" style="margin-bottom:10px">
+      <div class="section-title" style="display:flex;align-items:center;gap:8px">
+        🎬 Video Opportunities
+        <span style="font-size:11px;font-weight:500;color:var(--mu)">Upload videos to these vehicles to boost matches</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:12px">
+      ${getVideoPrompts().map(({vehicle:v,views,ratio})=>`<div class="walkaround-card">
+        <div class="wa-bg">${v.emoji||'🚗'}</div>
+        <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+          <div><div class="wa-title">${v.year} ${v.make} ${v.model}</div>
+            <div class="wa-sub">${views} views, only ${Math.round(ratio*100)}% convert to interest</div></div>
+          <div style="text-align:right;flex-shrink:0"><div class="wa-stat">${views}</div><div class="wa-stat-lbl">Views</div></div>
+        </div>
+        <button class="wa-btn" onclick="showToast('Video upload coming soon','info')" style="margin-top:8px">📹 Upload Video</button>
+      </div>`).join('')}
+    </div>
+  </div>` : ''}
+  <div class="stats-grid" style="margin-bottom:24px">
+    ${[
+      {label:'Total Leads',val:leads.length,cls:'sc-blue',trend:'+12%'},
+      {label:'Appointments',val:appts.length,cls:'sc-green',trend:'+'+appts.length*3+'%'},
+      {label:'Conversion Rate',val:convRate+'%',cls:'sc-orange',trend:'vs 8% avg'},
+      {label:'Avg Lead Quality',val:avgQ,cls:'sc-purple',trend:avgQ>60?'High quality':'Building'},
+    ].map(s=>`<div class="stat-card ${s.cls}">
+      <div class="stat-label">${s.label}</div>
+      <div class="stat-val">${s.val}</div>
+      <div class="stat-sub"><span class="stat-trend trend-up">${s.trend}</span></div>
+    </div>`).join('')}
+  </div>
+
+  <div class="analytics-grid">
+    <div class="chart-card">
+      <div class="chart-title">Lead Volume by Week</div>
+      <div class="chart-sub">Buyer matches over the past 4 weeks</div>
+      <div class="bar-chart">
+        ${weekData.map((v,i)=>`<div class="bar-col">
+          <div class="bar-val">${v}</div>
+          <div class="bar" style="height:${Math.round((v/maxW)*90)+5}px;background:var(--ac);opacity:${.5+i*.15}"></div>
+          <div class="bar-label">${weeks[i]}</div>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Intent Funnel</div>
+      <div class="chart-sub">Buyer journey stage distribution</div>
+      <div class="funnel">
+        ${[
+          {label:'Browsing',val:leads.length,color:'var(--ac)'},
+          {label:'Interested',val:intLeads,color:'var(--or)'},
+          {label:'Ready',val:readyLeads,color:'var(--gr)'},
+          {label:'Appointed',val:appts.length,color:'var(--pu)'},
+        ].map(f=>`<div class="funnel-step">
+          <div class="funnel-bar" style="width:${leads.length?Math.max(8,Math.round((f.val/leads.length)*100)*1.8):60}px;background:${f.color}">${f.label}</div>
+          <span class="funnel-count">${f.val}</span>
+          <span class="funnel-pct">${leads.length?Math.round(f.val/leads.length*100):0}%</span>
+        </div>`).join('')}
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Quality Breakdown</div>
+      <div class="chart-sub">Lead quality score distribution</div>
+      <div class="bar-chart">
+        ${[
+          {range:'0–30',val:leads.filter(l=>l.leadQuality<=30).length,color:'var(--mu)'},
+          {range:'31–60',val:leads.filter(l=>l.leadQuality>30&&l.leadQuality<=60).length,color:'var(--or)'},
+          {range:'61–80',val:leads.filter(l=>l.leadQuality>60&&l.leadQuality<=80).length,color:'var(--ac)'},
+          {range:'81+',val:leads.filter(l=>l.leadQuality>80).length,color:'var(--gr)'},
+        ].map(b=>{const mx=Math.max(...[leads.filter(l=>l.leadQuality<=30).length,leads.filter(l=>l.leadQuality>30&&l.leadQuality<=60).length,leads.filter(l=>l.leadQuality>60&&l.leadQuality<=80).length,leads.filter(l=>l.leadQuality>80).length],1);return`<div class="bar-col">
+          <div class="bar-val">${b.val}</div>
+          <div class="bar" style="height:${Math.round(b.val/mx*85)+5}px;background:${b.color}"></div>
+          <div class="bar-label">${b.range}</div>
+        </div>`;}).join('')}
+      </div>
+    </div>
+
+    <div class="chart-card">
+      <div class="chart-title">Key Metrics</div>
+      <div class="chart-sub">Performance summary</div>
+      <div class="metric-list">
+        ${[
+          {label:'Avg. Lead Quality Score',val:avgQ,cls:avgQ>70?'good':'warn'},
+          {label:'Appointment Conversion',val:convRate+'%',cls:convRate>10?'good':'warn'},
+          {label:'Ready Intent Rate',val:leads.length?Math.round(readyLeads/leads.length*100)+'%':'0%',cls:'good'},
+          {label:'Fast-Pass Completions',val:leads.filter(l=>l.fastPassComplete).length,cls:'good'},
+          {label:'Trade-In Data Collected',val:leads.filter(l=>l.tradeIn==='yes').length,cls:''},
+          {label:'Financing Preferences Known',val:leads.filter(l=>l.financing&&l.financing!=='undecided').length,cls:''},
+        ].map(m=>`<div class="metric-row">
+          <span class="metric-label">${m.label}</span>
+          <span class="metric-val ${m.cls}">${m.val}</span>
+        </div>`).join('')}
+      </div>
+    </div>
+  </div>`;
+
+  // Append conversion insights (built from real closed-deal data)
+  if (insights) {
+    document.getElementById('content').innerHTML +=
+      '<div style="padding:0 24px 24px">' + renderConversionInsights(insights) + '</div>';
+  }
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// LEAD DRAWER
+// ═══════════════════════════════════════════════════════════════════════
+
+
+function closeDrawer() {
+  document.getElementById('drawer-overlay').classList.remove('open');
+  document.getElementById('lead-drawer').classList.remove('open');
+}
+
+// ═══════════════════════════════════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════════════════════════════════
+function timeAgo(ts) {
+  if(!ts) return '—';
+  const diff = Date.now()-ts;
+  if(diff<60000) return 'Just now';
+  if(diff<3600000) return Math.round(diff/60000)+'m ago';
+  if(diff<86400000) return Math.round(diff/3600000)+'h ago';
+  return Math.round(diff/86400000)+'d ago';
+}
+
+function showToast(msg,type='info') {
+  const c=document.getElementById('toast-container');
+  const t=document.createElement('div');
+  t.className=`toast ${type}`;
+  t.innerHTML=`<span>${type==='success'?'✓':type==='error'?'✕':'ℹ️'}</span>${msg}`;
+  c.appendChild(t);
+  setTimeout(()=>t.remove(),3000);
+}
+
+
+// ═══════════════════════════════════════════════════════════════════════
+// FIREBASE + REAL-TIME MESSAGING
+// ═══════════════════════════════════════════════════════════════════════
+const AI_ENDPOINT = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1'
+  ? 'https://api.anthropic.com/v1/messages'
+  : '/api/chat';
+
+const FB_CONFIG = {
+  apiKey:            "AIzaSyCdmousKtSUwaelKO2wDEacoYGW6BDMzFA",
+  authDomain:        "autodrive-fe3c1.firebaseapp.com",
+  projectId:         "autodrive-fe3c1",
+  storageBucket:     "autodrive-fe3c1.firebasestorage.app",
+  messagingSenderId: "514067659350",
+  appId:             "1:514067659350:web:b2265cae4e9bceaa7ed9f7",
+};
+
+let fbDb = null;
+let fbUid = null;
+let allDlrThreads = [];      // live Firestore threads
+let activeCpThreadId = null; // currently open chat panel thread
+let cpMsgUnsub = null;       // unsubscribe for message listener
+let cpTypUnsub = null;       // unsubscribe for buyer typing
+let dlrTypTimer = null;      // debounce for dealer typing signal
+let threadsUnsub = null;     // unsubscribe for threads list
+
+// ── THREAD module (mirrors buyer app) ──────────────────────────────
+const THREAD = {
+  async send(db, threadId, {role, senderName, text, side}) {
+    const batch = db.batch();
+    const tRef = db.collection('conversations').doc(threadId);
+    const mRef = tRef.collection('messages').doc();
+    batch.set(mRef, {role, senderName, text,
+      sentAt: firebase.firestore.FieldValue.serverTimestamp(), readAt: null});
+    const uField = side === 'dealer' ? 'unreadBuyer' : 'unreadDealer';
+    batch.update(tRef, {
+      lastMessage: text.slice(0, 120),
+      lastAt: firebase.firestore.FieldValue.serverTimestamp(),
+      [uField]: firebase.firestore.FieldValue.increment(1),
+    });
+    await batch.commit();
+  },
+  async markRead(db, threadId, side) {
+    const f = side === 'dealer' ? 'unreadDealer' : 'unreadBuyer';
+    await db.collection('conversations').doc(threadId).update({[f]: 0});
+  },
+  onMessages(db, threadId, cb) {
+    return db.collection('conversations').doc(threadId)
+      .collection('messages').orderBy('sentAt', 'asc')
+      .onSnapshot(snap => cb(snap.docs.map(d => ({id:d.id, ...d.data()}))));
+  },
+  onThreads(db, dealerId, cb) {
+    return db.collection('conversations')
+      .where('dealerId', '==', dealerId).orderBy('lastAt', 'desc')
+      .onSnapshot(snap => cb(snap.docs.map(d => ({id:d.id, ...d.data()}))));
+  },
+  async setTyping(db, threadId, side, isTyping) {
+    await db.collection('conversations').doc(threadId)
+      .collection('presence').doc(side)
+      .set({typing: isTyping, at: Date.now()}, {merge: true});
+  },
+  onTyping(db, threadId, side, cb) {
+    return db.collection('conversations').doc(threadId)
+      .collection('presence').doc(side)
+      .onSnapshot(snap => {
+        if (!snap.exists) { cb(false); return; }
+        const {typing, at} = snap.data();
+        cb(typing && (Date.now() - at < 4000));
+      });
+  },
+};
+
+function loadScript(src) {
+  return new Promise((res, rej) => {
+    if (document.querySelector(`script[src="${src}"]`)) return res();
+    const s = document.createElement('script');
+    s.src = src; s.onload = res; s.onerror = rej;
+    document.head.appendChild(s);
+  });
+}
+
+let _fbInitPromise = null;
+async function initFirebase() {
+  if (_fbInitPromise) return _fbInitPromise;
+  if (FB_CONFIG.apiKey.startsWith('REPLACE')) {
+    console.info('AutoDrive Dealer: Firebase not configured — localStorage mode.');
+    return;
+  }
+  _fbInitPromise = (async () => {
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore-compat.js');
+    await loadScript('https://www.gstatic.com/firebasejs/10.12.0/firebase-storage-compat.js');
+    if (!firebase.apps.length) firebase.initializeApp(FB_CONFIG);
+    fbDb      = firebase.firestore();
+    fbStorage = firebase.storage();
+    console.info('AutoDrive Dealer: Firebase SDKs loaded.');
+  })();
+  return _fbInitPromise;
+}
+
+let fbStorage = null;
+
+// ── Load inventory from Firestore ──────────────────────────────────
+async function loadInventoryFromFirestore(dealerId) {
+  if (!fbDb) return;
+  try {
+    const snap = await fbDb.collection('dealers').doc(dealerId)
+                           .collection('inventory').orderBy('createdAt','desc').get();
+    if (snap.empty) {
+      // First run — seed with BASE_INVENTORY
+      await seedInventoryToFirestore(dealerId);
+      return;
+    }
+    inventory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+    lsSet(CRM_DOMAIN.inventoryKey, inventory);
+    console.info('Inventory loaded from Firestore:', inventory.length, 'vehicles');
+    // Subscribe to live inventory changes
+    fbDb.collection('dealers').doc(dealerId).collection('inventory')
+      .onSnapshot(snap => {
+        inventory = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+        lsSet(CRM_DOMAIN.inventoryKey, inventory);
+        if (activePage === 'inventory') renderInventory();
+      });
+    // Subscribe to live leads
+    subscribeToLeads(dealerId);
+    // Subscribe to threads
+    if (threadsUnsub) threadsUnsub();
+    threadsUnsub = THREAD.onThreads(fbDb, dealerId, threads => {
+      allDlrThreads = threads;
+      updateMsgBadge();
+      if (activePage === 'messages') renderMessages();
+      // Mark chatInitiated on leads that have a live thread
+      const leads = getLeads();
+      let changed = false;
+      threads.forEach(t => {
+        const lead = leads.find(l => String(l.carId) === String(t.vehicleId));
+        if (lead && !lead.chatInitiated) {
+          lead.chatInitiated  = true;
+          lead.messageCount   = (t.messages?.length || 0);
+          changed = true;
+        }
+      });
+      if (changed) lsSet(CRM_DOMAIN.leadsKey, leads);
+    });
+  } catch(e) { console.warn('loadInventoryFromFirestore failed:', e); }
+}
+
+async function seedInventoryToFirestore(dealerId) {
+  const batch = fbDb.batch();
+  BASE_INVENTORY.forEach(v => {
+    const ref = fbDb.collection('dealers').doc(dealerId)
+                    .collection('inventory').doc(String(v.id));
+    batch.set(ref, { ...v, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+  });
+  await batch.commit();
+  inventory = [...BASE_INVENTORY];
+  console.info('Seeded BASE_INVENTORY to Firestore');
+  subscribeToLeads(dealerId);
+}
+
+// ── Live leads subscription ─────────────────────────────────────────
+let leadsUnsub = null;
+function subscribeToLeads(dealerId) {
+  if (leadsUnsub) leadsUnsub();
+  if (!fbDb) return;
+  leadsUnsub = fbDb.collection('dealers').doc(dealerId)
+    .collection('leads').orderBy('lastActive','desc').limit(200)
+    .onSnapshot(snap => {
+      const leads = snap.docs.map(d => ({ id: d.id, ...d.data() }));
+      lsSet('ad_dealer_leads', leads);
+      updateBadges();
+      if (activePage === 'crm')   renderCRM();
+      if (activePage === 'leads') renderLeads();
+    }, e => console.warn('leads subscription error', e));
+}
+
+function updateMsgBadge() {
+  const total = allDlrThreads.reduce((s, t) => s + (t.unreadDealer || 0), 0);
+  const b = document.getElementById('msg-badge');
+  if (b) { b.textContent = total; b.style.display = total > 0 ? 'flex' : 'none'; }
+}
+
+// ── MESSAGES PAGE ───────────────────────────────────────────────────
+function renderMessages() {
+  const iMap = {browsing:{l:'🔭',c:'var(--ac)'},interested:{l:'⚡',c:'var(--or)'},ready:{l:'🚗 Ready',c:'var(--gr)'}};
+  const tAgo = ts => {
+    if (!ts) return '';
+    const d = Date.now() - (ts?.toDate ? ts.toDate().getTime() : Number(ts));
+    if (d < 60000) return 'Just now'; if (d < 3600000) return Math.round(d/60000)+'m';
+    if (d < 86400000) return Math.round(d/3600000)+'h'; return Math.round(d/86400000)+'d';
+  };
+
+  document.getElementById('content').innerHTML = `
+  <div class="section-header" style="margin-bottom:16px">
+    <div class="section-title">Inbox</div>
+    <div style="font-size:13px;color:var(--mu)">${allDlrThreads.length} conversation${allDlrThreads.length!==1?'s':''}</div>
+  </div>
+  ${allDlrThreads.length === 0
+    ? `<div class="empty-box"><div class="ei">💬</div>
+       <h3>No conversations yet</h3>
+       <p>Messages appear here when buyers open Dealer Chat in the AutoDrive buyer app.</p>
+       </div>`
+    : `<div style="display:flex;flex-direction:column;gap:6px">
+      ${allDlrThreads.map(t => {
+        const ic = iMap[t.intentLevel] || iMap.browsing;
+        const initials = (t.buyerName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+        return `<div class="inbox-thread ${t.unreadDealer>0?'unread':''} ${activeCpThreadId===t.id?'active':''}"
+          onclick="openChatPanel('${t.id}')">
+          <div class="inbox-av">${initials}</div>
+          <div style="flex:1;min-width:0">
+            <div class="inbox-name">${t.buyerName||'Anonymous'}</div>
+            <div class="inbox-preview">${t.lastMessage||'No messages yet'}</div>
+            <div class="inbox-meta">
+              <span class="inbox-intent" style="background:${ic.c}18;color:${ic.c}">${ic.l} ${t.intentLevel}</span>
+              <span class="inbox-time">${tAgo(t.lastAt)}</span>
+              ${t.unreadDealer>0?`<span class="inbox-unread">${t.unreadDealer}</span>`:''}
+            </div>
+          </div>
+        </div>`;
+      }).join('')}
+    </div>`}`;
+}
+
+// ── CHAT PANEL (slides in from right) ──────────────────────────────
+function openChatPanel(threadId) {
+  const thread = allDlrThreads.find(t => t.id === threadId);
+  if (!thread) return;
+  activeCpThreadId = threadId;
+
+  // Update header
+  const initials = (thread.buyerName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  document.getElementById('cp-av').textContent = initials;
+  document.getElementById('cp-name').textContent = thread.buyerName || 'Anonymous Buyer';
+  document.getElementById('cp-sub').textContent = thread.vehicleName || '';
+  document.getElementById('cp-typing-av').textContent = initials;
+
+  // Intent bar
+  const iMap = {browsing:{l:'🔭 Browsing',c:'var(--ac)'},interested:{l:'⚡ Interested',c:'var(--or)'},ready:{l:'🚗 Ready',c:'var(--gr)'}};
+  const ic = iMap[thread.intentLevel] || iMap.browsing;
+  document.getElementById('cp-intent-bar').innerHTML =
+    `<div style="display:flex;align-items:center;gap:7px">
+       <div class="live-dot"></div>
+       <span style="font-weight:600;color:${ic.c};font-size:12px">${ic.l}</span>
+       <span style="font-size:11px;color:var(--mu)">· ${thread.vehicleName||'Vehicle'}</span>
+     </div>
+     ${thread.intentLevel==='ready'?'<span style="font-size:11px;color:var(--gr);margin-left:auto;font-weight:600">🏁 Fast-Pass ready</span>':''}`;
+
+  // Quick replies based on intent
+  const qrs = thread.intentLevel==='ready'
+    ? ['Confirm appointment 📅','I\'ll pull the car around 🚗','Documents received ✓','Call you shortly 📞']
+    : thread.intentLevel==='interested'
+    ? ['Happy to answer questions!','What\'s your timeline?','I can check financing options','Want to schedule a test drive?']
+    : ['Thanks for your interest!','Feel free to ask anything','Happy to help when you\'re ready'];
+  // Load AI suggested replies asynchronously
+  const suggestSection = document.createElement('div');
+  suggestSection.id = 'ai-suggestions-section';
+  suggestSection.style.cssText = 'padding:0 14px 8px;flex-shrink:0;border-bottom:1px solid var(--b1)';
+  const cpInputArea = document.querySelector('.cp-input-area');
+  if (cpInputArea) cpInputArea.insertBefore(suggestSection, cpInputArea.firstChild);
+  loadSuggestedRepliesIntoPanel(threadId);
+
+  document.getElementById('cp-qr-bar').innerHTML = qrs.map(r =>
+    `<button class="cp-qr" onclick="sendDlrQuick('${r.replace(/'/g,"\\'")}'">${r}</button>`).join('');
+
+  // Open panel
+  document.getElementById('chat-panel').classList.add('open');
+
+  // Clear old msgs and subscribe
+  if (cpMsgUnsub) cpMsgUnsub();
+  if (cpTypUnsub) cpTypUnsub();
+
+  if (fbDb) {
+    // Mark read
+    THREAD.markRead(fbDb, threadId, 'dealer'); updateMsgBadge();
+
+    // Subscribe to messages
+    cpMsgUnsub = THREAD.onMessages(fbDb, threadId, msgs => {
+      const panel = document.getElementById('cp-msgs');
+      if (!panel) return;
+      const typRow = document.getElementById('cp-typing-row');
+      const bot = document.getElementById('cp-bot');
+      Array.from(panel.children).forEach(c => {
+        if (c.id!=='cp-typing-row' && c.id!=='cp-bot') c.remove();
+      });
+      msgs.forEach(m => {
+        const el = document.createElement('div');
+        el.innerHTML = renderCpMsg(m, initials);
+        panel.insertBefore(el.firstChild || el, typRow || bot);
+      });
+      THREAD.markRead(fbDb, threadId, 'dealer'); updateMsgBadge();
+      setTimeout(() => { if(bot) bot.scrollIntoView({behavior:'smooth'}); }, 50);
+    });
+
+    // Subscribe to buyer typing indicator
+    cpTypUnsub = THREAD.onTyping(fbDb, threadId, 'buyer', isTyping => {
+      const row = document.getElementById('cp-typing-row');
+      if (row) row.style.display = isTyping ? 'flex' : 'none';
+      if (isTyping) setTimeout(()=>{ const b=document.getElementById('cp-bot'); if(b)b.scrollIntoView({behavior:'smooth'}); }, 50);
+    });
+  } else {
+    // Firebase not configured — show placeholder
+    const panel = document.getElementById('cp-msgs');
+    const bot = document.getElementById('cp-bot');
+    if (panel && bot) {
+      const el = document.createElement('div');
+      el.innerHTML = `<div style="text-align:center;padding:28px 16px;color:var(--mu);font-size:12px;line-height:1.7">
+        <div style="font-size:28px;margin-bottom:10px">🔧</div>
+        <strong style="color:var(--tx)">Firebase not configured</strong><br/>
+        Add your Firebase config to enable real-time messaging between buyer and dealer.
+      </div>`;
+      panel.insertBefore(el, bot);
+    }
+  }
+
+  // Refresh inbox to show active state
+  if (activePage === 'messages') renderMessages();
+}
+
+function renderCpMsg(m, buyerInitials) {
+  const txt = (m.text || '').replace(/\n/g, '<br>');
+  const ts = m.sentAt?.toDate
+    ? m.sentAt.toDate().toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'})
+    : '';
+  if (m.role === 'dealer') {
+    return `<div class="cp-msg dealer">
+      <div class="cp-bubble dealer-out">${txt}<div class="cp-ts light">${ts}</div></div>
+      <div class="dlr-av-sm">ME</div>
+    </div>`;
+  }
+  return `<div class="cp-msg">
+    <div class="buyer-av">${buyerInitials||'?'}</div>
+    <div class="cp-bubble buyer">${txt}<div class="cp-ts">${ts}</div></div>
+  </div>`;
+}
+
+function closeChatPanel() {
+  if (cpMsgUnsub) { cpMsgUnsub(); cpMsgUnsub = null; }
+  if (cpTypUnsub) { cpTypUnsub(); cpTypUnsub = null; }
+  if (fbDb && activeCpThreadId) THREAD.setTyping(fbDb, activeCpThreadId, 'dealer', false);
+  activeCpThreadId = null;
+  document.getElementById('chat-panel').classList.remove('open');
+  if (activePage === 'messages') renderMessages();
+}
+
+async function sendDlrMsg() {
+  const inp = document.getElementById('cp-inp');
+  const txt = inp?.value?.trim(); if (!txt || !activeCpThreadId) return;
+  inp.value = '';
+  const btn = document.getElementById('cp-send-btn'); if(btn) btn.disabled = true;
+
+  // Stop typing indicator
+  clearTimeout(dlrTypTimer);
+  if (fbDb && activeCpThreadId) await THREAD.setTyping(fbDb, activeCpThreadId, 'dealer', false);
+
+  if (fbDb && activeCpThreadId) {
+    try {
+      await THREAD.send(fbDb, activeCpThreadId, {
+        role: 'dealer', senderName: currentUser?.name || 'Dealer',
+        text: txt, side: 'dealer',
+      });
+    } catch(e) {
+      console.warn('sendDlrMsg failed', e);
+      showToast("Couldn't send — check Firebase config", 'error');
+    }
+  } else {
+    // Optimistic local render if no Firebase
+    const panel = document.getElementById('cp-msgs');
+    const bot = document.getElementById('cp-bot');
+    if (panel && bot) {
+      const thread = allDlrThreads.find(t => t.id === activeCpThreadId);
+      const el = document.createElement('div');
+      el.innerHTML = renderCpMsg({role:'dealer', text:txt, sentAt:null}, '');
+      panel.insertBefore(el.firstChild || el, bot);
+      setTimeout(() => { if(bot) bot.scrollIntoView({behavior:'smooth'}); }, 50);
+    }
+  }
+  if(btn) btn.disabled = false;
+}
+
+async function sendDlrQuick(txt) {
+  const inp = document.getElementById('cp-inp'); if(inp) inp.value = txt;
+  await sendDlrMsg();
+}
+
+function onDlrTyping() {
+  if (!fbDb || !activeCpThreadId) return;
+  THREAD.setTyping(fbDb, activeCpThreadId, 'dealer', true);
+  clearTimeout(dlrTypTimer);
+  dlrTypTimer = setTimeout(() => THREAD.setTyping(fbDb, activeCpThreadId, 'dealer', false), 2500);
+}
+
+// Expose chat open from lead drawer
+function openDrawer(leadId) { openCRMDrawer(leadId); }
+
+function openChatFromLead(leadId) {
+  // Find thread for this lead
+  const leads = getLeads();
+  const lead = leads.find(l => l.id === leadId);
+  if (!lead) return;
+  const threadId = `${lead.userId}_${lead.carId}`;
+  const thread = allDlrThreads.find(t => t.id === threadId);
+  if (thread) {
+    closeDrawer();
+    openChatPanel(threadId);
+  } else {
+    showToast('No conversation started yet — buyer must open chat first', 'info');
+  }
+}
+
+
+function renderDemand() {
+  document.getElementById('content').innerHTML = renderDemandInsights();
+}
+
+// ════════════════════════════════════════════════════════════════════
+// Wire renderVideoPrompts into analytics page
+// ════════════════════════════════════════════════════════════════════
+
+// Firebase initialises after dealer logs in (see doLogin)
+
+
+// ════════════════════════════════════════════════════════════════════
+// FEATURE: INTENT GAUGE
+// Scores a lead 0–100 based on xp, intentLevel, vt20, fastPass
+// ════════════════════════════════════════════════════════════════════
+function intentGaugeScore(lead) {
+  let score = 0;
+  // Intent level (40 pts max)
+  const intentPts = {browsing: 10, interested: 25, ready: 40};
+  score += intentPts[lead.intentLevel] || 10;
+  // XP proxy (20 pts max) — buyer XP not in lead record yet,
+  // so we derive from lead quality score
+  score += Math.round((lead.leadQuality || 30) * 0.2);
+  // Fast-Pass completed (15 pts)
+  if (lead.fastPassComplete) score += 15;
+  // Appointment confirmed (25 pts)
+  if (lead.appointments?.some(a => a.status === 'CONFIRMED')) score += 25;
+  return Math.min(100, score);
+}
+
+function intentGaugeHtml(score) {
+  const color = score >= 75 ? 'var(--gr)' : score >= 45 ? 'var(--or)' : 'var(--mu)';
+  const label = score >= 75 ? '🔥 High Intent' : score >= 45 ? '⚡ Warming Up' : '👀 Early Stage';
+  return `<div class="intent-gauge-wrap">
+    <div class="ig-row">
+      <span style="font-size:11px;color:var(--mu);width:80px">Intent Score</span>
+      <div class="ig-track"><div class="ig-fill" style="width:${score}%;background:${color}"></div></div>
+      <span class="ig-val" style="color:${color}">${score}</span>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;font-size:11px">
+      <span class="intent-level-chip" style="background:${color}18;color:${color}">${label}</span>
+      <span style="color:var(--mu);font-size:10px">${score>=75?'Prioritise this lead':score>=45?'Follow up today':'Nurture — not ready yet'}</span>
+    </div>
+  </div>`;
+}
+
+// ════════════════════════════════════════════════════════════════════
+// FEATURE: WALKAROUND VIDEO PROMPT
+// Fires when a vehicle has high views but low match rate
+// ════════════════════════════════════════════════════════════════════
+function getVideoPrompts() {
+  const leads = getLeads();
+  // Count views per vehicle from lead data
+  const viewCounts = {};
+  const matchCounts = {};
+  leads.forEach(l => {
+    viewCounts[l.carId]  = (viewCounts[l.carId]  || 0) + 1;
+    matchCounts[l.carId] = (matchCounts[l.carId] || 0) + (l.intentLevel !== 'browsing' ? 1 : 0);
+  });
+  // Find vehicles with >2 views but <30% conversion to interest
+  const prompts = [];
+  inventory.forEach(v => {
+    const views   = viewCounts[v.id]  || 0;
+    const matches = matchCounts[v.id] || 0;
+    const ratio   = views > 0 ? matches / views : 1;
+    if (views >= 2 && ratio < 0.3 && v.status === 'available') {
+      prompts.push({vehicle: v, views, matches, ratio});
+    }
+  });
+  return prompts.sort((a, b) => b.views - a.views).slice(0, 3);
+}
+
+function renderVideoPrompts() {
+  const prompts = getVideoPrompts();
+  if (!prompts.length) return '<div style="font-size:12px;color:var(--mu);text-align:center;padding:16px">No video opportunities right now — great job!</div>';
+  return prompts.map(({vehicle: v, views, ratio}) => `
+    <div class="walkaround-card">
+      <div class="wa-bg">${v.emoji||'🚗'}</div>
+      <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:10px">
+        <div>
+          <div class="wa-title">${v.year} ${v.make} ${v.model}</div>
+          <div class="wa-sub">Getting eyes but low conversions.<br/>A 10-second video can increase matches by up to 40%.</div>
+        </div>
+        <div style="text-align:right;flex-shrink:0">
+          <div class="wa-stat">${views}</div>
+          <div class="wa-stat-lbl">Views</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px;align-items:center">
+        <button class="wa-btn" onclick="showToast('Video upload feature coming soon — your developer needs to integrate a CDN','info')">
+          📹 Upload Video
+        </button>
+        <span style="font-size:10px;opacity:.65">${Math.round(ratio*100)}% swipe-right rate</span>
+      </div>
+    </div>
+  `).join('');
+}
+
+// ════════════════════════════════════════════════════════════════════
+// FEATURE: AI-ASSISTED SUGGESTED REPLIES
+// Context-aware reply templates based on buyer intent + message content
+// ════════════════════════════════════════════════════════════════════
+const REPLY_TEMPLATES = {
+  carfax: {
+    text: "Here's a link to the vehicle history report: [CARFAX_URL]. Title is clean with no accidents reported.",
+    tag: 'trust', tagLabel: 'Trust', hint: 'When buyer asks about history'
+  },
+  price: {
+    text: "Our best price is $[PRICE]. We can also explore financing options — what monthly payment works for you?",
+    tag: 'price', tagLabel: 'Price', hint: 'When buyer negotiates'
+  },
+  tradein: {
+    text: "Absolutely — we do remote trade-in appraisals. Send photos to [EMAIL] and we'll have a number for you within 2 hours.",
+    tag: 'service', tagLabel: 'Service', hint: 'When buyer mentions trade-in'
+  },
+  available: {
+    text: "Yes, it's still available! It's been popular this week — would you like to hold it with a fully refundable $200 deposit?",
+    tag: 'urgency', tagLabel: 'Urgency', hint: 'When buyer asks availability'
+  },
+  testdrive: {
+    text: "Great — I can have it ready for a test drive today. Morning or afternoon works better for you?",
+    tag: 'urgency', tagLabel: 'Urgency', hint: 'When buyer wants test drive'
+  },
+  inspection: {
+    text: "Of course — you're welcome to bring a mechanic or use our certified pre-owned inspection checklist. Transparency is important to us.",
+    tag: 'trust', tagLabel: 'Trust', hint: 'When buyer wants inspection'
+  },
+  warranty: {
+    text: "This vehicle comes with [WARRANTY_DETAILS]. We also offer extended warranty packages starting at $[PRICE]/mo.",
+    tag: 'service', tagLabel: 'Service', hint: 'When buyer asks about warranty'
+  },
+  financing: {
+    text: "We work with 12 lenders to find your best rate. With good credit, you're looking at around [RATE]% APR. Want me to run a soft pre-qualification?",
+    tag: 'price', tagLabel: 'Financing', hint: 'When buyer asks about financing'
+  },
+};
+
+// AI-generated context-aware reply (uses AI_ENDPOINT if available, falls back to templates)
+async function getAISuggestedReplies(threadId, lastBuyerMsg) {
+  // Always return template suggestions immediately
+  const templateSuggestions = Object.values(REPLY_TEMPLATES).slice(0, 4);
+
+  // Optionally use AI to rank/customise (non-blocking)
+  if (typeof AI_ENDPOINT !== 'undefined') {
+    try {
+      const thread = allDlrThreads.find(t => t.id === threadId);
+      const prompt = `You are helping a car dealer respond professionally to a buyer.
+Buyer's last message: "${lastBuyerMsg}"
+Vehicle: ${thread?.vehicleName || 'Unknown'}
+Buyer intent: ${thread?.intentLevel || 'browsing'}
+
+Return ONLY a JSON array of exactly 3 reply suggestions. Each: {"text": "...", "tag": "trust|price|urgency|service", "hint": "..."}
+Keep each reply under 25 words. Be warm, professional, specific.`;
+
+      const res = await fetch(AI_ENDPOINT, {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({
+          model: 'claude-sonnet-4-20250514', max_tokens: 400,
+          system: 'Return only valid JSON. No markdown, no explanation.',
+          messages: [{role: 'user', content: prompt}]
+        })
+      });
+      const data = await res.json();
+      const text = data.content?.[0]?.text || '';
+      const parsed = JSON.parse(text.replace(/```json|```/g, '').trim());
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch(e) { /* fall through to templates */ }
+  }
+  return templateSuggestions;
+}
+
+function renderSuggestedReplies(suggestions) {
+  const tagClass = {trust:'spt-trust', price:'spt-price', urgency:'spt-urgency', service:'spt-service'};
+  return `<div class="ai-suggest-section">
+    <div class="ai-suggest-label">Suggested Replies</div>
+    ${suggestions.map(s => `
+    <button class="suggest-pill" onclick="useSuggestedReply(${JSON.stringify(s.text).replace(/'/g,"&#39;")})">
+      <div class="suggest-pill-text">${s.text}</div>
+      <span class="suggest-pill-tag ${tagClass[s.tag]||'spt-trust'}">${s.hint||s.tag}</span>
+    </button>`).join('')}
+  </div>`;
+}
+
+function useSuggestedReply(text) {
+  const inp = document.getElementById('cp-inp');
+  if (inp) { inp.value = text; inp.focus(); }
+}
+
+async function loadSuggestedRepliesIntoPanel(threadId) {
+  const section = document.getElementById('ai-suggestions-section');
+  if (!section) return;
+  section.innerHTML = '<div style="font-size:11px;color:var(--mu);padding:10px 0">Generating suggestions…</div>';
+  const thread = allDlrThreads.find(t => t.id === threadId);
+  const lastMsg = thread?.lastMessage || '';
+  const suggestions = await getAISuggestedReplies(threadId, lastMsg);
+  section.innerHTML = renderSuggestedReplies(suggestions);
+}
+
+// ════════════════════════════════════════════════════════════════════
+// FEATURE: DEMAND INSIGHTS / VIBE HEATMAP
+// Shows which vibe tags are trending in buyer swipes
+// ════════════════════════════════════════════════════════════════════
+function computeVibeDemand() {
+  const leads  = getLeads();
+  const tagCounts  = {};
+  const tagMatches = {};
+
+  // Count vibe tag appearances in leads
+  leads.forEach(l => {
+    const v = inventory.find(x => x.id === l.carId);
+    if (!v) return;
+    // inventory doesn't have vibe tags — use static map
+    const VIBE_MAP = {
+      1:["Family First","All-Weather","Tech Packed"],
+      2:["Work Ready","Mountain Ready","Power House"],
+      3:["Eco Warrior","Tech Forward","Speed Demon"],
+      4:["Daily Driver","Fuel Saver","Sharp Look"],
+      5:["Luxury Ride","Power House","Status Symbol"],
+      6:["Eco Warrior","City Slicker","Budget Smart"],
+      7:["Sharp Look","All-Weather","Driver's Pick"],
+      8:["Mountain Ready","Off-Road King","Adventure"],
+      9:["All-Weather","Mountain Ready","Family First"],
+      10:["Eco Warrior","Family First","Tech Packed"],
+      11:["Status Symbol","Power House","Luxury Ride"],
+      12:["Adventure","Eco Warrior","Tech Forward"],
+    };
+    const tags = VIBE_MAP[l.carId] || [];
+    tags.forEach(t => {
+      tagCounts[t]  = (tagCounts[t]  || 0) + 1;
+      if (l.intentLevel !== 'browsing') {
+        tagMatches[t] = (tagMatches[t] || 0) + 1;
+      }
+    });
+  });
+
+  return Object.entries(tagCounts)
+    .map(([tag, count]) => ({
+      tag, count,
+      matches: tagMatches[tag] || 0,
+      convRate: count > 0 ? Math.round((tagMatches[tag]||0) / count * 100) : 0,
+    }))
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 12);
+}
+
+function renderDemandInsights() {
+  const demand = computeVibeDemand();
+  const maxCount = Math.max(...demand.map(d => d.count), 1);
+  const colors = ['var(--ac)','var(--gr)','var(--or)','var(--pu)'];
+
+  return `
+  <div class="section-header" style="margin-bottom:12px">
+    <div class="section-title">Vibe Tag Demand</div>
+    <div style="font-size:12px;color:var(--mu)">What buyers in your market are swiping right on</div>
+  </div>
+  ${demand.length === 0
+    ? `<div class="empty-box"><div class="ei">📊</div><h3>Not enough data yet</h3><p>Demand insights build as buyers swipe through your inventory.</p></div>`
+    : `<div class="demand-grid">
+      ${demand.map((d, i) => {
+        const color = colors[i % colors.length];
+        const trending = d.convRate > 50;
+        return `<div class="demand-tag">
+          <div class="dt-name">${d.tag}</div>
+          <div class="dt-bar-track"><div class="dt-bar-fill" style="width:${Math.round(d.count/maxCount*100)}%;background:${color}"></div></div>
+          <div class="dt-stats">
+            <span>${d.count} view${d.count!==1?'s':''}</span>
+            <span style="color:${d.convRate>50?'var(--gr)':'var(--mu)'}">${d.convRate}% convert</span>
+          </div>
+          ${trending?`<div class="dt-trending" style="color:var(--gr)">↑ Trending</div>`:''}
+        </div>`;
+      }).join('')}
+    </div>
+    <div style="margin-top:16px;padding:14px 16px;background:var(--s2);border-radius:10px;border:1px solid var(--b1)">
+      <div style="font-size:12px;font-weight:700;margin-bottom:6px">💡 Auction Strategy</div>
+      <div style="font-size:12px;color:var(--mu);line-height:1.6">
+        ${demand[0]?.tag && demand[1]?.tag
+          ? `<strong style="color:var(--tx)">"${demand[0].tag}"</strong> and <strong style="color:var(--tx)">"${demand[1].tag}"</strong> are your highest-demand tags right now. At your next auction, prioritise vehicles with these characteristics.`
+          : 'Build up more buyer interactions to see your market demand signals.'}
+      </div>
+    </div>`}`;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// DEALER CRM — Vertical-agnostic engine
+// Domain: 'auto' | 'realestate' | 'jobs'
+// ═══════════════════════════════════════════════════════════════════
+
+// ── Domain config — swap this object to pivot the entire CRM ────────
+const CRM_DOMAIN = {
+  id:          'auto',
+  agentLabel:  'Dealer',
+  itemLabel:   'Vehicle',
+  itemPluralLabel: 'Vehicles',
+  inventoryKey: 'dlr_inventory',
+  leadsKey:     'ad_dealer_leads',
+  dealerId:     'metro_auto',
+  currency:     '$',
+  priceLabel:   'Price',
+  monthlyLabel: 'Monthly',
+  imageLabel:   'Vehicle Photo',
+  statusLabels: { new:'New Lead', contacted:'Contacted', sold:'Sold/Closed', archived:'Archived', price_mismatch:'Price Mismatch' },
+  intentLabels: { browsing:'🔭 Browsing', interested:'⚡ Interested', ready:'🚗 Ready' },
+  handoffActions: [
+    { id:'appraisal',  label:'Send Appraisal', icon:'📋', primary:false },
+    { id:'testdrive',  label:'Schedule Drive', icon:'🗝️', primary:true  },
+    { id:'carfax',     label:'Send CarFax',    icon:'📄', primary:false },
+    { id:'offer',      label:'Make Offer',     icon:'💰', primary:false },
+  ],
+  vibeTagSuggestions: [
+    'Family First','All-Weather','Tech Packed','Work Ready','Mountain Ready',
+    'Power House','Eco Warrior','City Slicker','Budget Smart','Fuel Saver',
+    'Speed Demon','Sharp Look','Status Symbol','Daily Driver','Adventure',
+  ],
+};
+
+// Apply domain class to body for CSS variable injection
+document.body.classList.add('domain-' + CRM_DOMAIN.id);
+
+// ── Lead Priority Sorting ────────────────────────────────────────────
+// Sort keys and their comparator functions — fully replaceable per domain
+const LEAD_SORT_FNS = {
+  priority: (a, b) => computeLeadPriority(b) - computeLeadPriority(a),
+  intent:   (a, b) => {
+    const rank = { ready:3, interested:2, browsing:1 };
+    return (rank[b.intentLevel]||0) - (rank[a.intentLevel]||0);
+  },
+  recent:   (a, b) => (b.lastActive||0) - (a.lastActive||0),
+  quality:  (a, b) => (b.leadQuality||0) - (a.leadQuality||0),
+  status:   (a, b) => {
+    const rank = { new:4, contacted:3, sold:1, archived:0 };
+    return (rank[b.status]||0) - (rank[a.status]||0);
+  },
+};
+
+let crmSortKey    = lsGet('crm_sort', 'priority');
+let crmFilterMode = lsGet('crm_filter', 'all');   // 'all' | 'new' | 'contacted' | 'ready' | 'sold'
+
+// ── computeLeadPriority — composite score 0–100 ─────────────────────
+function computeLeadPriority(lead) {
+  let score = 0;
+
+  // 1. Intent level (0–30)
+  const intentPts = { ready:30, interested:18, browsing:6 };
+  score += intentPts[lead.intentLevel] || 6;
+
+  // 2. View time / engagement (0–20)
+  const viewTimePts = Math.min(20, Math.round((lead.viewTime || 0) / 3));
+  score += viewTimePts;
+
+  // 3. Lead quality score (0–20)
+  score += Math.min(20, Math.round((lead.leadQuality || 30) * 0.2));
+
+  // 4. Financial data attached (0–15)
+  if (lead.ghostMessage)   score += 8;
+  if (lead.revDMode === 'FINANCE' || lead.revDMode === 'CASH') score += 7;
+
+  // 5. Fast-Pass completion (0–15)
+  if (lead.fastPassComplete)  score += 10;
+  if (lead.licenseVerified)   score += 5;
+
+  return Math.min(100, score);
+}
+
+// ── Heat map level from priority score ──────────────────────────────
+function heatClass(score) {
+  return score >= 70 ? 'h-hot' : score >= 40 ? 'h-warm' : 'h-cool';
+}
+function heatLabel(score) {
+  return score >= 70 ? '🔥 Hot' : score >= 40 ? '⚡ Warm' : '👀 Cool';
+}
+
+
+// ── editVehicle — price and status editor ────────────────────────────
+// When a dealer saves a new price:
+//   1. Updates inventory[] in memory + localStorage
+//   2. Calls invalidateLeadsForVehicle() which marks leads whose buyer
+//      budget no longer covers the new price
+//   3. Re-renders the inventory and pipeline views
+let _editingVehicleId = null;
+
+function editVehicle(id) {
+  const v = inventory.find(x => x.id === id);
+  if (!v) return;
+  _editingVehicleId = id;
+
+  const modal = document.getElementById('edit-vehicle-modal');
+  if (!modal) return;
+
+  modal.querySelector('#ev-year').value  = v.year;
+  modal.querySelector('#ev-make').value  = v.make;
+  modal.querySelector('#ev-model').value = v.model;
+  modal.querySelector('#ev-price').value = v.price;
+  modal.querySelector('#ev-miles').value = v.mileage;
+  modal.querySelector('#ev-status').value = v.status;
+
+  modal.classList.add('open');
+}
+
+function closeEditVehicleModal() {
+  const modal = document.getElementById('edit-vehicle-modal');
+  if (modal) modal.classList.remove('open');
+  _editingVehicleId = null;
+}
+
+function saveVehicleEdit() {
+  if (!_editingVehicleId) return;
+  const v = inventory.find(x => x.id === _editingVehicleId);
+  if (!v) return;
+
+  const newPrice   = Number(document.getElementById('ev-price').value) || v.price;
+  const newMileage = document.getElementById('ev-miles').value || v.mileage;
+  const newStatus  = document.getElementById('ev-status').value || v.status;
+  const oldPrice   = Number(v.price) || 0;
+
+  // Update in-memory inventory
+  v.price   = newPrice;
+  v.monthly = Math.round(newPrice / 60);
+  v.mileage = newMileage;
+  v.status  = newStatus;
+
+  lsSet(CRM_DOMAIN.inventoryKey, inventory);
+
+  // Persist price change to Firestore
+  if (fbDb) {
+    const dealerId = currentUser?.dealer_id || 'metro_auto';
+    fbDb.collection('dealers').doc(dealerId).collection('inventory')
+      .doc(String(_editingVehicleId))
+      .update({ price: newPrice, monthly: Math.round(newPrice/60), mileage: newMileage, status: newStatus,
+                updatedAt: firebase.firestore.FieldValue.serverTimestamp() })
+      .catch(e => console.warn('Firestore price update failed:', e));
+  }
+
+  // Invalidate leads whose buyer budget no longer covers the new price
+  const affected = invalidateLeadsForVehicle(_editingVehicleId, newPrice, oldPrice);
+
+  closeEditVehicleModal();
+  renderInventory();
+  // computeFilteredLeads() will pick up the new inventory price automatically.
+  // No manual lead mutation needed for the UI — just re-render.
+  if (activePage === 'crm' || activePage === 'leads') {
+    if (activePage === 'crm') renderCRM();
+    else renderLeads();
+  }
+  updateBadges();  // pipeline count updates immediately
+
+  const counts = getPipelineCounts();
+  if (affected > 0 || counts.priceMismatch > 0) {
+    showToast(
+      `Price updated. ${counts.priceMismatch} lead${counts.priceMismatch!==1?'s':''} now outside buyer budget.`,
+      counts.priceMismatch > 0 ? 'info' : 'success'
+    );
+  } else {
+    showToast('Vehicle updated', 'success');
+  }
+}
+
+// ── invalidateLeadsForVehicle ─────────────────────────────────────────
+// When a price changes, re-evaluate every lead tied to that vehicle.
+// Returns the count of leads whose budget fit changed (for the toast).
+//
+// State syncing rules:
+//   • budgetMax and revDMaxBudget are stored as Numbers (after pushLead fix)
+//   • String-stored budget field ("$15k–$45k") is display-only, ignored here
+//   • A lead is "out of budget" if newPrice > buyerBudgetMax
+//   • Status is set to 'price_mismatch' — a new status visible in the CRM
+function invalidateLeadsForVehicle(vehicleId, newPrice, oldPrice) {
+  const leads  = getLeads();
+  let affected = 0;
+  const np     = Number(newPrice) || 0;
+  const op     = Number(oldPrice) || 0;
+  const priceRose = np > op;
+
+  leads.forEach(lead => {
+    if (lead.carId !== vehicleId) return;
+
+    // Determine buyer's effective max budget (numeric)
+    // Support both old string format and new numeric fields
+    let buyerMax = Number(lead.budgetMax) || 0;
+
+    // Fallback: parse the old display string "$15,000–$45,000"
+    if (!buyerMax && typeof lead.budget === 'string') {
+      const match = lead.budget.match(/–\$?([\d,]+)/);
+      if (match) buyerMax = Number(match[1].replace(/,/g,'')) || 0;
+    }
+
+    // Also check revD CASH budget
+    const revDMax = Number(lead.revDMaxBudget) || 0;
+    const effectiveMax = Math.max(buyerMax, revDMax > 0 ? revDMax : 0);
+
+    // Determine if price change affects this lead's fit
+    const wasInBudget = effectiveMax === 0 || op <= effectiveMax;
+    const nowInBudget = effectiveMax === 0 || np <= effectiveMax;
+
+    if (wasInBudget && !nowInBudget) {
+      // Price rose out of buyer's range
+      lead.priceMismatch = true;
+      lead.priceMismatchAt = Date.now();
+      lead.status = lead.status === 'new' ? 'price_mismatch' : lead.status;
+      lead.lastActive = Date.now();
+      affected++;
+    } else if (!wasInBudget && nowInBudget) {
+      // Price dropped back into buyer's range — re-activate
+      lead.priceMismatch = false;
+      if (lead.status === 'price_mismatch') lead.status = 'new';
+      lead.lastActive = Date.now();
+      affected++;
+    }
+  });
+
+  if (affected > 0) lsSet(CRM_DOMAIN.leadsKey, leads);
+  return affected;
+}
+
+
+// ═══════════════════════════════════════════════════════════════════
+// CONVERSION ENGINE — outcome capture + intent scoring feedback loop
+//
+// Every closed deal writes a ConversionRecord to:
+//   localStorage('ad_conversions')          — local analytics
+//   Firestore dealers/{id}/conversions/{id} — platform-wide model
+//
+// The signal snapshot records WHAT was true about the buyer at close.
+// Over time this tells us which signals actually predict purchases.
+// ═══════════════════════════════════════════════════════════════════
+
+// ── captureSignalSnapshot — freeze all scoring signals at close time ─
+function captureSignalSnapshot(lead) {
+  const now = Date.now();
+
+  // Time signals
+  const createdAt    = Number(lead.createdAt || lead.savedAt || now);
+  const firstContact = Number(lead.firstContactAt || createdAt);
+  const daysToClose  = Math.round((now - createdAt)    / 86400000 * 10) / 10;
+  const daysFromContact = Math.round((now - firstContact) / 86400000 * 10) / 10;
+
+  // Active behavioral signals — exactly what computeLeadPriority uses
+  const signals = {
+    // Intent
+    intentLevel:       lead.intentLevel || 'browsing',
+    intentScore:       {ready:30, interested:18, browsing:6}[lead.intentLevel] || 6,
+
+    // Engagement
+    viewTime:          Number(lead.viewTime)    || 0,
+    viewTimeScore:     Math.min(20, Math.round((Number(lead.viewTime)||0) / 3)),
+    chatInitiated:     !!lead.chatInitiated,       // buyer opened chat thread
+    messageCount:      Number(lead.messageCount)   || 0,
+
+    // Financial commitment signals (the most predictive we have)
+    revDActive:        lead.revDMode !== 'ANY' && !!lead.revDMode,
+    revDMode:          lead.revDMode || 'ANY',
+    revDMonthly:       Number(lead.revDMonthly)   || 0,
+    revDDown:          Number(lead.revDDown)       || 0,
+    revDMaxBudget:     Number(lead.revDMaxBudget)  || 0,
+    ghostMessageSent:  !!lead.ghostMessage,
+    ghostMessage:      lead.ghostMessage || null,
+
+    // Verification signals
+    fastPassComplete:  !!lead.fastPassComplete,
+    licenseVerified:   !!lead.licenseVerified,
+    insuranceVerified: !!lead.insuranceVerified,
+
+    // Budget fit
+    budgetMin:         Number(lead.budgetMin)      || 0,
+    budgetMax:         Number(lead.budgetMax)       || 0,
+    financing:         lead.financing              || 'undecided',
+    tradeIn:           lead.tradeIn               || 'none',
+    priceMismatchEver: !!lead.priceMismatch,
+
+    // Lead quality
+    leadQuality:       Number(lead.leadQuality)    || 30,
+    matchScore:        Number(lead.matchScore)      || 0,
+  };
+
+  // Final composite score at close
+  const priorityAtClose = computeLeadPriority(lead);
+
+  // Which "notification threshold" would this have crossed?
+  // (For the future: only notify dealer when score > threshold)
+  const notifyThreshold = priorityAtClose >= 70 ? 'hot'
+                        : priorityAtClose >= 40 ? 'warm'
+                        : 'cold';
+
+  return {
+    // Identity
+    leadId:          lead.id,
+    vehicleId:       lead.carId,
+    vehicleName:     lead.car,
+    dealerId:        currentUser?.dealer_id || 'metro_auto',
+    repId:           lead.assignedRepId || currentUser?.uid || null,
+
+    // Outcome
+    outcome:         'sold',
+    closedAt:        now,
+    daysToClose,
+    daysFromContact,
+
+    // The full signal picture at close
+    signals,
+    priorityAtClose,
+    notifyThreshold,
+
+    // Model metadata — used to weight signals over time
+    modelVersion:    '1.0',
+  };
+}
+
+// ── markAsSold — the full sold flow ──────────────────────────────────
+let _soldLeadId = null;
+
+function openSoldModal(leadId) {
+  const leads = computeFilteredLeads();
+  const lead  = leads.find(l => l.id === leadId);
+  if (!lead) return;
+  _soldLeadId = leadId;
+
+  // Pre-compute the snapshot so dealer can see what signals were active
+  const snapshot = captureSignalSnapshot(lead);
+  const priority = snapshot.priorityAtClose;
+  const activeSignals = Object.entries(snapshot.signals)
+    .filter(([k,v]) => v === true)
+    .map(([k]) => ({
+      revDActive:        '💰 Financial target set',
+      ghostMessageSent:  '✉️ Opened with budget message',
+      fastPassComplete:  '🏁 Fast-Pass completed',
+      licenseVerified:   '🪪 ID verified',
+      insuranceVerified: '📄 Insurance verified',
+      chatInitiated:     '💬 Initiated chat',
+    }[k])
+    ).filter(Boolean);
+
+  const modal = document.getElementById('sold-modal');
+  if (!modal) return;
+
+  modal.querySelector('#sold-vehicle').textContent = lead.car || 'Vehicle';
+  modal.querySelector('#sold-buyer').textContent   = lead.userName || 'Buyer';
+  modal.querySelector('#sold-score').textContent   = priority;
+  modal.querySelector('#sold-signals').innerHTML   = activeSignals.length
+    ? activeSignals.map(s => `<div class="sold-signal">${s}</div>`).join('')
+    : '<div style="color:var(--mu);font-size:12px">No strong signals recorded</div>';
+
+  // Threshold label
+  const threshEl = modal.querySelector('#sold-threshold');
+  const labels = { hot:'🔥 Hot — would have triggered dealer notification', warm:'⚡ Warm', cold:'👀 Cool' };
+  threshEl.textContent = labels[snapshot.notifyThreshold] || '';
+  threshEl.className   = `sold-threshold sold-thresh-${snapshot.notifyThreshold}`;
+
+  modal.classList.add('open');
+}
+
+function closeSoldModal() {
+  document.getElementById('sold-modal')?.classList.remove('open');
+  _soldLeadId = null;
+}
+
+async function confirmSold() {
+  if (!_soldLeadId) return;
+
+  const salePrice  = Number(document.getElementById('sold-price')?.value) || 0;
+  const saleNote   = document.getElementById('sold-note')?.value?.trim() || '';
+  const leads      = getLeads();
+  const lead       = leads.find(l => l.id === _soldLeadId);
+  if (!lead) return;
+
+  // Capture snapshot BEFORE marking sold
+  const snapshot = captureSignalSnapshot(lead);
+  snapshot.salePrice  = salePrice;
+  snapshot.saleNote   = saleNote;
+
+  // If we have listed price, capture discount
+  const listedPrice = inventory.find(v => String(v.id) === String(lead.carId))?.price || 0;
+  if (listedPrice && salePrice) {
+    snapshot.listedPrice   = listedPrice;
+    snapshot.priceVariance = salePrice - listedPrice;  // negative = discount
+    snapshot.discountPct   = Math.round((1 - salePrice/listedPrice) * 100 * 10) / 10;
+  }
+
+  // Mark lead as sold
+  lead.status   = 'sold';
+  lead.soldAt   = Date.now();
+  lead.salePrice = salePrice;
+  lead.conversionSnapshot = snapshot;
+  lsSet(CRM_DOMAIN.leadsKey, leads);
+
+  // Store in conversions log
+  const conversions = lsGet('ad_conversions', []);
+  conversions.push(snapshot);
+  lsSet('ad_conversions', conversions);
+
+  // Write to Firestore
+  if (fbDb) {
+    const dealerId = currentUser?.dealer_id || 'metro_auto';
+    try {
+      // Update lead
+      await fbDb.collection('dealers').doc(dealerId)
+        .collection('leads').doc(String(lead.id))
+        .update({ status:'sold', soldAt: firebase.firestore.FieldValue.serverTimestamp(),
+                  salePrice, conversionSnapshot: snapshot });
+      // Write conversion record (platform-wide learning data)
+      await fbDb.collection('dealers').doc(dealerId)
+        .collection('conversions').doc(String(snapshot.closedAt))
+        .set(snapshot);
+      // Platform-level aggregate (for model training across all dealers)
+      await fbDb.collection('_platform').doc('conversions')
+        .collection('records').doc(String(snapshot.closedAt))
+        .set({ ...snapshot, dealerId });
+    } catch(e) { console.warn('Firestore conversion write failed:', e); }
+  }
+
+  closeSoldModal();
+  updateBadges();
+  if (activePage === 'crm' || activePage === 'leads') renderCRM();
+  showToast('🎉 Deal closed — conversion data captured', 'success');
+}
+
+// ── getConversionInsights — derive model weights from closed deals ────
+// Called by renderAnalytics to show "what's actually predicting sales"
+function getConversionInsights() {
+  const conversions = lsGet('ad_conversions', []);
+  if (conversions.length < 3) return null;  // not enough data yet
+
+  const total = conversions.length;
+
+  // For each signal, what % of closed deals had it active?
+  const signalKeys = [
+    'revDActive', 'ghostMessageSent', 'fastPassComplete',
+    'licenseVerified', 'chatInitiated', 'priceMismatchEver',
+  ];
+  const signalLabels = {
+    revDActive:        'Financial target set',
+    ghostMessageSent:  'Budget message sent',
+    fastPassComplete:  'Fast-Pass completed',
+    licenseVerified:   'ID verified',
+    chatInitiated:     'Initiated chat',
+    priceMismatchEver: 'Had price mismatch',
+  };
+
+  const signalRates = signalKeys.map(key => {
+    const withSignal = conversions.filter(c => c.signals?.[key] === true).length;
+    return {
+      key,
+      label:      signalLabels[key],
+      rate:       total > 0 ? Math.round(withSignal / total * 100) : 0,
+      count:      withSignal,
+    };
+  }).sort((a,b) => b.rate - a.rate);
+
+  // Average priority score at close
+  const avgScore = Math.round(
+    conversions.reduce((s,c) => s + (c.priorityAtClose||0), 0) / total
+  );
+
+  // Average days to close
+  const avgDays = Math.round(
+    conversions.reduce((s,c) => s + (c.daysToClose||0), 0) / total * 10
+  ) / 10;
+
+  // Hot/warm/cold breakdown
+  const threshBreakdown = {
+    hot:  conversions.filter(c => c.notifyThreshold === 'hot').length,
+    warm: conversions.filter(c => c.notifyThreshold === 'warm').length,
+    cold: conversions.filter(c => c.notifyThreshold === 'cold').length,
+  };
+
+  // Intent breakdown at close
+  const intentBreakdown = {
+    ready:      conversions.filter(c => c.signals?.intentLevel === 'ready').length,
+    interested: conversions.filter(c => c.signals?.intentLevel === 'interested').length,
+    browsing:   conversions.filter(c => c.signals?.intentLevel === 'browsing').length,
+  };
+
+  return {
+    total, avgScore, avgDays,
+    signalRates, threshBreakdown, intentBreakdown,
+    // Suggested notification threshold based on data
+    // (score that captures 80% of closed deals)
+    suggestedThreshold: (() => {
+      const scores = conversions.map(c => c.priorityAtClose||0).sort((a,b)=>a-b);
+      const idx    = Math.floor(scores.length * 0.2);  // bottom 20%
+      return scores[idx] || 65;
+    })(),
+  };
+}
+
+
+function renderConversionInsights(ins) {
+  if (!ins) return '';
+  const bar = (pct, color='var(--ac)') =>
+    `<div style="height:6px;background:var(--s2);border-radius:3px;overflow:hidden;margin-top:4px">
+      <div style="width:${pct}%;height:100%;background:${color};border-radius:3px;transition:width .5s"></div>
+    </div>`;
+
+  return `
+  <div style="margin-top:20px">
+    <div class="section-title" style="margin-bottom:4px">Conversion Intelligence</div>
+    <div class="section-sub" style="margin-bottom:14px">
+      Built from ${ins.total} closed deal${ins.total!==1?'s':''} on your platform.
+      ${ins.total < 10 ? ' More deals = more accurate model.' : ''}
+    </div>
+
+    <!-- Key metrics row -->
+    <div class="stats-grid" style="margin-bottom:14px">
+      <div class="stat-card sc-green">
+        <div class="stat-label">Closed Deals</div>
+        <div class="stat-val">${ins.total}</div>
+        <div class="stat-sub">in your history</div>
+      </div>
+      <div class="stat-card sc-blue">
+        <div class="stat-label">Avg Score at Close</div>
+        <div class="stat-val">${ins.avgScore}</div>
+        <div class="stat-sub">out of 100</div>
+      </div>
+      <div class="stat-card sc-orange">
+        <div class="stat-label">Avg Days to Close</div>
+        <div class="stat-val">${ins.avgDays}</div>
+        <div class="stat-sub">from first swipe</div>
+      </div>
+      <div class="stat-card sc-purple">
+        <div class="stat-label">Suggested Notify Threshold</div>
+        <div class="stat-val">${ins.suggestedThreshold}+</div>
+        <div class="stat-sub">score to trigger alert</div>
+      </div>
+    </div>
+
+    <!-- Signal rates — what % of closed deals had each signal -->
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:18px 20px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:14px">
+        Which signals appeared in closed deals
+        <span style="font-size:11px;font-weight:400;color:var(--mu);margin-left:6px">% of your ${ins.total} closed deals that had this signal active</span>
+      </div>
+      ${ins.signalRates.map(s => `
+        <div style="margin-bottom:12px">
+          <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px">
+            <span style="font-weight:600">${s.label}</span>
+            <span style="font-weight:700;color:${s.rate>60?'var(--gr)':s.rate>30?'var(--or)':'var(--mu)'}">${s.rate}% <span style="font-weight:400;color:var(--mu)">(${s.count}/${ins.total})</span></span>
+          </div>
+          ${bar(s.rate, s.rate>60?'var(--gr)':s.rate>30?'var(--or)':'var(--ac)')}
+        </div>`).join('')}
+    </div>
+
+    <!-- Intent breakdown -->
+    <div style="background:var(--s1);border:1px solid var(--b1);border-radius:14px;padding:18px 20px;margin-bottom:12px">
+      <div style="font-size:13px;font-weight:700;margin-bottom:12px">Intent level at time of close</div>
+      <div style="display:flex;gap:10px;flex-wrap:wrap">
+        ${[['ready','🚗 Ready','var(--gr)'],['interested','⚡ Interested','var(--or)'],['browsing','🔭 Browsing','var(--ac)']].map(([k,l,c])=>`
+          <div style="flex:1;min-width:80px;text-align:center;padding:12px;background:var(--s2);border-radius:10px">
+            <div style="font-size:20px;font-weight:800;color:${c}">${ins.intentBreakdown[k]}</div>
+            <div style="font-size:11px;color:var(--mu);margin-top:2px">${l}</div>
+          </div>`).join('')}
+      </div>
+    </div>
+
+    <!-- Threshold insight -->
+    <div style="background:rgba(91,110,245,.06);border:1px solid rgba(91,110,245,.2);border-radius:14px;padding:16px 18px">
+      <div style="font-size:13px;font-weight:700;color:var(--ac);margin-bottom:6px">💡 Notification Threshold Recommendation</div>
+      <div style="font-size:12px;color:var(--mu);line-height:1.6">
+        Based on your closed deals, a score of <strong style="color:var(--tx)">${ins.suggestedThreshold}+</strong>
+        captures 80% of buyers who purchased. Setting a future notification threshold here would alert you
+        to high-intent buyers without spamming you on every swipe.
+        <br/><br/>
+        <strong style="color:var(--tx)">${ins.threshBreakdown.hot} hot</strong> ·
+        <strong style="color:var(--or)">${ins.threshBreakdown.warm} warm</strong> ·
+        <strong style="color:var(--mu)">${ins.threshBreakdown.cold} cold</strong> leads closed.
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── renderCRM — main CRM leads view ─────────────────────────────────
+function renderCRM() {
+  // computeFilteredLeads() cross-references live inventory on every call.
+  // No manual invalidation needed — price changes are reflected immediately.
+  let leads = computeFilteredLeads();
+
+  // Filter — uses _displayStatus (live-computed) not stored status
+  if (crmFilterMode !== 'all') {
+    if (crmFilterMode === 'price_mismatch') {
+      leads = leads.filter(l => l.priceMismatch === true);
+    } else if (['new','contacted','sold','archived'].includes(crmFilterMode)) {
+      leads = leads.filter(l => l._displayStatus === crmFilterMode);
+    } else {
+      leads = leads.filter(l => l.intentLevel === crmFilterMode);
+    }
+  }
+
+  // Sort
+  const sortFn = LEAD_SORT_FNS[crmSortKey] || LEAD_SORT_FNS.priority;
+  leads = [...leads].sort(sortFn);
+
+  const filterOptions = [
+    { key:'all',            label:'All' },
+    { key:'new',            label:'New' },
+    { key:'contacted',      label:'Contacted' },
+    { key:'ready',          label:'🚗 Ready' },
+    { key:'interested',     label:'⚡ Warm' },
+    { key:'sold',           label:'Closed' },
+    { key:'price_mismatch', label:'⚠️ Price Mismatch' },
+  ];
+
+  document.getElementById('content').innerHTML = `
+  <div class="crm-toolbar">
+    <select class="crm-sort-select" onchange="crmSortKey=this.value;lsSet('crm_sort',this.value);renderCRM()">
+      ${Object.keys(LEAD_SORT_FNS).map(k=>`
+        <option value="${k}" ${k===crmSortKey?'selected':''}>Sort: ${k.charAt(0).toUpperCase()+k.slice(1)}</option>
+      `).join('')}
+    </select>
+    ${filterOptions.map(f=>`
+      <button class="crm-filter-pill ${crmFilterMode===f.key?'active':''}"
+        onclick="crmFilterMode='${f.key}';lsSet('crm_filter','${f.key}');renderCRM()">
+        ${f.label}
+      </button>`).join('')}
+    <span class="crm-count-badge">${leads.length} lead${leads.length!==1?'s':''}</span>
+  </div>
+
+  ${leads.length === 0
+    ? `<div class="empty-box">
+        <div class="ei">📋</div>
+        <h3>No leads yet</h3>
+        <p>Leads appear here when buyers swipe right on your inventory and move toward Ready intent.</p>
+       </div>`
+    : `<div style="display:flex;flex-direction:column;gap:10px">
+        ${leads.map(lead => renderLeadPreviewCard(lead)).join('')}
+       </div>`}`;
+}
+
+// ── renderLeadPreviewCard — the LeadPreview UI component ─────────────
+function renderLeadPreviewCard(lead) {
+  const priority  = computeLeadPriority(lead);
+  const hCls      = heatClass(priority);
+  const status    = lead.status || 'new';
+  const statusMap = { new:'crm-new', contacted:'crm-contacted', sold:'crm-sold', price_mismatch:'crm-mismatch' };
+  const dotColor  = { new:'var(--ac)', contacted:'var(--or)', sold:'var(--gr)', archived:'var(--mu)', price_mismatch:'var(--rd)' };
+  const initials  = (lead.userName||'Buyer').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2);
+  const tAgo      = ts => { if(!ts) return ''; const d=Date.now()-ts; if(d<60000) return 'Just now'; if(d<3600000) return Math.round(d/60000)+'m ago'; if(d<86400000) return Math.round(d/3600000)+'h ago'; return Math.round(d/86400000)+'d ago'; };
+
+  // Financial chips
+  const finChips = [];
+  // Live price mismatch chip — always computed, never from stored field
+  if (lead.priceMismatch && lead._livePrice > 0) {
+    finChips.push(`<span class="crm-fin-chip" style="color:var(--rd);border-color:rgba(220,38,38,.3);background:rgba(220,38,38,.08)">
+      ⚠️ $${lead._livePrice.toLocaleString()} · over budget by $${(lead._livePrice - (lead._effectiveMax||0)).toLocaleString()}
+    </span>`);
+  }
+  if (lead.revDMode === 'FINANCE' && lead.revDMonthly) {
+    finChips.push(`<span class="crm-fin-chip finance">📆 $${lead.revDMonthly}/mo${lead.revDDown?` · $${lead.revDDown.toLocaleString()} dn`:''}</span>`);
+  } else if (lead.revDMode === 'CASH' && lead.revDMaxBudget) {
+    finChips.push(`<span class="crm-fin-chip cash">💵 $${lead.revDMaxBudget.toLocaleString()} cash</span>`);
+  }
+  if (lead.fastPassComplete) finChips.push('<span class="crm-fin-chip" style="color:var(--gr);border-color:rgba(29,185,106,.3);background:rgba(29,185,106,.08)">🏁 Fast-Pass</span>');
+  if (lead.licenseVerified)  finChips.push('<span class="crm-fin-chip" style="color:var(--gr);border-color:rgba(29,185,106,.3);background:rgba(29,185,106,.08)">🪪 ID Verified</span>');
+
+  return `
+  <div class="crm-card ${statusMap[status]||'crm-new'}" onclick="openCRMDrawer(${lead.id})">
+    <div class="crm-card-hdr">
+      <div class="crm-avatar">${initials}</div>
+      <div style="flex:1;min-width:0">
+        <div class="crm-name">${lead.userName || 'Anonymous Buyer'}</div>
+        <div class="crm-vehicle">${lead.car || 'Unknown Vehicle'}</div>
+      </div>
+      <div class="crm-meta">
+        <div class="crm-time">${tAgo(lead.lastActive)}</div>
+        <div style="display:flex;align-items:center;justify-content:flex-end;gap:5px">
+          <span style="font-size:10px;font-weight:700;color:${dotColor[status]||'var(--ac)'}">${CRM_DOMAIN.statusLabels[status]||status}</span>
+          <div class="crm-status-dot" style="background:${dotColor[status]||'var(--ac)'}"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Heat Map bar -->
+    <div class="crm-heat">
+      <div class="crm-heat-label">
+        <span>${CRM_DOMAIN.intentLabels[lead.intentLevel]||'Browsing'} · ${heatLabel(priority)}</span>
+        <span class="heat-val">${priority}/100</span>
+      </div>
+      <div class="heat-track">
+        <div class="heat-fill ${hCls}" style="width:${priority}%"></div>
+      </div>
+    </div>
+
+    ${finChips.length ? `<div class="crm-finance-row">${finChips.join('')}</div>` : ''}
+
+    ${lead.ghostMessage ? `<div class="crm-ghost-preview">
+      <strong>Buyer said: </strong>${lead.ghostMessage.slice(0,100)}${lead.ghostMessage.length>100?'…':''}
+    </div>` : ''}
+
+    <div class="crm-actions">
+      <button class="crm-action-btn primary" onclick="event.stopPropagation();openCRMChat(${lead.id})">
+        <span class="ca-icon">💬</span>Chat
+      </button>
+      <button class="crm-action-btn" onclick="event.stopPropagation();openHandoffModal(${lead.id},'testdrive')">
+        <span class="ca-icon">🗝️</span>Schedule
+      </button>
+      <button class="crm-action-btn" onclick="event.stopPropagation();openHandoffModal(${lead.id},'appraisal')">
+        <span class="ca-icon">📋</span>Appraisal
+      </button>
+      <button class="crm-action-btn" onclick="event.stopPropagation();cycleCRMStatus(${lead.id})">
+        <span class="ca-icon">↻</span>Status
+      </button>
+    </div>
+  </div>`;
+}
+
+// ── cycleCRMStatus — rotate new→contacted→sold→new ──────────────────
+function cycleCRMStatus(leadId) {
+  const leads = getLeads();
+  const lead  = leads.find(l=>l.id===leadId);
+  if (!lead) return;
+  const next = { new:'contacted', contacted:'sold', sold:'new', archived:'new' }[lead.status||'new'] || 'new';
+
+  // Transitioning to sold → open capture modal instead of cycling silently
+  if (next === 'sold') {
+    openSoldModal(leadId);
+    return;
+  }
+
+  // Track first contact time for days-to-close calculation
+  if (next === 'contacted' && !lead.firstContactAt) {
+    lead.firstContactAt = Date.now();
+  }
+
+  lead.status = next;
+  lead.lastActive = Date.now();
+  lsSet(CRM_DOMAIN.leadsKey, leads);
+
+  if (fbDb) {
+    const dealerId = currentUser?.dealer_id || 'metro_auto';
+    fbDb.collection('dealers').doc(dealerId)
+      .collection('leads').doc(String(lead.id))
+      .update({ status: next, lastActive: firebase.firestore.FieldValue.serverTimestamp(),
+                firstContactAt: lead.firstContactAt || null })
+      .catch(()=>{});
+  }
+  renderCRM();
+  showToast(`Status → ${CRM_DOMAIN.statusLabels[next]||next}`, 'success');
+}
+
+// ── openCRMDrawer — lead detail side panel ──────────────────────────
+let activeCRMLeadId = null;
+function openCRMDrawer(leadId) {
+  activeCRMLeadId = leadId;
+  const leads = getLeads();
+  const lead  = leads.find(l=>l.id===leadId);
+  if (!lead) return;
+  const priority = computeLeadPriority(lead);
+  const hCls     = heatClass(priority);
+
+  document.getElementById('crm-drawer-body').innerHTML = `
+    <div style="padding:20px">
+      <!-- Buyer identity -->
+      <div style="display:flex;align-items:center;gap:13px;margin-bottom:18px">
+        <div class="crm-avatar" style="width:52px;height:52px;font-size:18px;border-radius:13px">
+          ${(lead.userName||'?').split(' ').map(w=>w[0]).join('').toUpperCase().slice(0,2)}
+        </div>
+        <div>
+          <div style="font-size:17px;font-weight:800;margin-bottom:2px">${lead.userName||'Anonymous'}</div>
+          <div style="font-size:12px;color:var(--mu)">${lead.userEmail||''}</div>
+        </div>
+      </div>
+
+      <!-- Vehicle + match score -->
+      <div style="background:var(--s2);border:1px solid var(--b1);border-radius:11px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:5px">${CRM_DOMAIN.itemLabel}</div>
+        <div style="font-size:14px;font-weight:700;margin-bottom:3px">${lead.car||'Unknown'}</div>
+        <div style="display:flex;align-items:center;gap:10px;font-size:12px;color:var(--mu)">
+          <span>Match: <strong style="color:var(--ac)">${lead.matchScore||lead.leadQuality||0}%</strong></span>
+          ${lead.revDMode?`<span>Mode: <strong style="color:var(--tx)">${lead.revDMode}</strong></span>`:''}
+        </div>
+      </div>
+
+      <!-- Priority heat map (detailed) -->
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Lead Priority</div>
+        <div class="heat-track" style="height:10px;margin-bottom:6px">
+          <div class="heat-fill ${hCls}" style="width:${priority}%;height:100%"></div>
+        </div>
+        <div style="display:flex;justify-content:space-between;font-size:11px">
+          <span style="color:var(--mu)">${heatLabel(priority)}</span>
+          <span style="font-weight:700">${priority}/100</span>
+        </div>
+      </div>
+
+      <!-- Financial targets -->
+      ${(lead.revDMode === 'FINANCE' || lead.revDMode === 'CASH') ? `
+      <div style="background:var(--s2);border:1px solid var(--b1);border-radius:11px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Financial Target</div>
+        ${lead.revDMode==='FINANCE'
+          ? `<div style="font-size:20px;font-weight:800;color:var(--ac);margin-bottom:3px">$${lead.revDMonthly||0}/mo</div>
+             <div style="font-size:12px;color:var(--mu)">$${(lead.revDDown||0).toLocaleString()} down · Finance mode</div>`
+          : `<div style="font-size:20px;font-weight:800;color:var(--gr);margin-bottom:3px">$${(lead.revDMaxBudget||0).toLocaleString()} cash</div>
+             <div style="font-size:12px;color:var(--mu)">Cash purchase · No financing needed</div>`}
+      </div>` : ''}
+
+      <!-- Ghost message -->
+      ${lead.ghostMessage ? `
+      <div style="background:rgba(91,110,245,.06);border:1px solid rgba(91,110,245,.2);border-radius:11px;padding:12px 14px;margin-bottom:14px">
+        <div style="font-size:10px;color:var(--ac);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px">Buyer's Opening Message</div>
+        <div style="font-size:13px;color:var(--tx);line-height:1.6;font-style:italic">"${lead.ghostMessage}"</div>
+      </div>` : ''}
+
+      <!-- Document verification -->
+      ${(lead.licenseVerified || lead.insuranceVerified) ? `
+      <div style="margin-bottom:14px">
+        <div style="font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Verified Documents</div>
+        ${lead.licenseVerified ? `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--b1);font-size:12px">
+          <span style="color:var(--gr)">🪪</span>
+          <span style="font-weight:600">${lead.licenseVerified.name||'ID Verified'}</span>
+          <span style="color:var(--mu);margin-left:auto">${lead.licenseVerified.state||''} · Exp ${lead.licenseVerified.expiry||''}</span>
+        </div>` : ''}
+        ${lead.insuranceVerified ? `<div style="display:flex;align-items:center;gap:8px;padding:7px 0;font-size:12px">
+          <span style="color:var(--gr)">📄</span>
+          <span style="font-weight:600">${lead.insuranceVerified.provider||'Insurance Verified'}</span>
+          <span style="color:var(--mu);margin-left:auto">Exp ${lead.insuranceVerified.expiry||''}</span>
+        </div>` : ''}
+      </div>` : ''}
+
+      <!-- Handoff actions — dealer controls -->
+      <div style="margin-bottom:6px">
+        <div style="font-size:10px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:10px">${CRM_DOMAIN.agentLabel} Controls</div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          ${CRM_DOMAIN.handoffActions.map(a=>`
+            <button class="dc-btn ${a.primary?'primary':''}"
+              onclick="openHandoffModal(${lead.id},'${a.id}')">
+              ${a.icon} ${a.label}
+            </button>`).join('')}
+          <button class="dc-btn" onclick="openCRMChat(${lead.id})">
+            💬 Open Live Chat
+          </button>
+          ${lead.status !== 'sold' ? `
+          <button class="dc-btn primary" onclick="closeCRMDrawer();openSoldModal(${lead.id})">
+            🎉 Mark as Sold — Capture Data
+          </button>` : `
+          <div style="font-size:11px;color:var(--gr);font-weight:600;padding:6px 0">
+            ✓ Closed ${new Date(lead.soldAt||Date.now()).toLocaleDateString()}
+            ${lead.salePrice ? ' · $'+Number(lead.salePrice).toLocaleString() : ''}
+          </div>`}
+          ${lead.status !== 'sold' ? `
+          <button class="dc-btn" onclick="cycleCRMStatus(${lead.id})">
+            ↻ ${CRM_DOMAIN.statusLabels[{new:'contacted',contacted:'sold',sold:'new'}[lead.status||'new']]||'Next Status'}
+          </button>` : ''}
+        </div>
+      </div>
+    </div>`;
+
+  document.getElementById('crm-drawer-overlay').classList.add('open');
+}
+
+function closeCRMDrawer() {
+  document.getElementById('crm-drawer-overlay').classList.remove('open');
+  activeCRMLeadId = null;
+}
+
+// ── openCRMChat — open chat panel from CRM lead ──────────────────────
+function openCRMChat(leadId) {
+  const leads = getLeads();
+  const lead  = leads.find(l=>l.id===leadId);
+  if (!lead) return;
+  closeCRMDrawer();
+  const threadId = `${lead.userId}_${lead.carId}`;
+  const thread = allDlrThreads.find(t => t.id === threadId);
+  if (thread) {
+    openChatPanel(threadId);
+  } else {
+    showToast('No conversation started yet — buyer must initiate chat first', 'info');
+  }
+}
+
+// ── Handoff Modal — Send Appraisal / Schedule Test Drive ─────────────
+function openHandoffModal(leadId, actionId) {
+  const leads  = getLeads();
+  const lead   = leads.find(l=>l.id===leadId);
+  if (!lead) return;
+  const action = CRM_DOMAIN.handoffActions.find(a=>a.id===actionId) || { label:actionId, icon:'📋' };
+
+  const templates = {
+    appraisal: {
+      title: 'Send Appraisal Link',
+      body: `Hi ${lead.userName||'there'},\n\nHere's the appraisal link for the ${lead.car||'vehicle'}:\n[APPRAISAL_URL]\n\nLet me know if you have any questions!`,
+      cta: 'Send via Chat',
+    },
+    testdrive: {
+      title: 'Schedule Test Drive',
+      body: `Hi ${lead.userName||'there'},\n\nI'd love to get you behind the wheel of the ${lead.car||'vehicle'}. When works best for you?\n\n• Tomorrow 10:00 AM\n• Tomorrow 2:00 PM\n• This week — just name a time`,
+      cta: 'Send Availability',
+    },
+    carfax: {
+      title: 'Send Vehicle History',
+      body: `Hi ${lead.userName||'there'},\n\nHere's the full history report for the ${lead.car||'vehicle'}:\n[CARFAX_URL]\n\nClean title, no accidents. Let me know what questions you have!`,
+      cta: 'Send Report',
+    },
+    offer: {
+      title: 'Send Offer',
+      body: `Hi ${lead.userName||'there'},\n\nI've put together our best offer on the ${lead.car||'vehicle'}:\n\n• Price: [OFFER_PRICE]\n• ${lead.revDMode==='CASH'?'Cash price — no financing fees':'Monthly: ~$[MONTHLY]/mo with $[DOWN] down'}\n\nGood through [DATE]. Let's talk!`,
+      cta: 'Send Offer',
+    },
+  };
+
+  const tmpl = templates[actionId] || templates.appraisal;
+  const modal = document.getElementById('handoff-modal');
+  if (!modal) return;
+
+  modal.querySelector('.dlr-modal-title').textContent = `${action.icon} ${tmpl.title}`;
+  modal.querySelector('.dlr-modal-sub').textContent = `For ${lead.userName||'buyer'} · ${lead.car||''}`;
+  modal.querySelector('#handoff-body').value = tmpl.body;
+  modal.querySelector('#handoff-cta').textContent = tmpl.cta;
+  modal.querySelector('#handoff-cta').onclick = () => sendHandoffMessage(leadId, actionId);
+  modal.classList.add('open');
+}
+
+function closeHandoffModal() {
+  document.getElementById('handoff-modal')?.classList.remove('open');
+}
+
+function sendHandoffMessage(leadId, actionId) {
+  const textarea = document.getElementById('handoff-body');
+  const msg = textarea?.value?.trim();
+  if (!msg) return;
+
+  const leads  = getLeads();
+  const lead   = leads.find(l=>l.id===leadId);
+  const threadId = `${lead?.userId}_${lead?.carId}`;
+
+  if (fbDb && threadId && lead) {
+    THREAD.send(fbDb, threadId, {
+      role: 'dealer', senderName: currentUser?.name || 'Dealer',
+      text: msg, side: 'dealer',
+    }).then(() => {
+      closeHandoffModal();
+      showToast('Message sent via chat', 'success');
+      openChatPanel(threadId);
+    }).catch(() => showToast('Failed to send — check Firebase', 'error'));
+  } else {
+    closeHandoffModal();
+    showToast('Message ready — connect Firebase to send', 'info');
+  }
+}
+
+// ── Upgraded Inventory Form with Vibe Tags + Image Upload ────────────
+let newVehicleVibes = [];
+let newVehicleImageUrl = '';
+let newVehicleImageFile = null;
+
+function renderInventoryForm() {
+  return `
+  <div class="inv-form">
+    <div class="inv-form-section">
+      <div class="inv-form-title">Core Details</div>
+      <div class="fr" style="margin-bottom:11px">
+        <div><label class="fl">Year *</label><input class="fi" id="nv-year" placeholder="2024" maxlength="4"/></div>
+        <div><label class="fl">Make *</label><input class="fi" id="nv-make" placeholder="Toyota"/></div>
+      </div>
+      <div class="fr" style="margin-bottom:11px">
+        <div><label class="fl">Model *</label><input class="fi" id="nv-model" placeholder="RAV4"/></div>
+        <div><label class="fl">Trim</label><input class="fi" id="nv-trim" placeholder="XLE"/></div>
+      </div>
+      <div class="fr" style="margin-bottom:11px">
+        <div><label class="fl">${CRM_DOMAIN.priceLabel} *</label>
+          <div style="display:flex;align-items:center;gap:5px">
+            <span style="color:var(--mu)">$</span>
+            <input class="fi" id="nv-price" type="number" placeholder="34500"/>
+          </div>
+        </div>
+        <div><label class="fl">Mileage</label><input class="fi" id="nv-miles" placeholder="New"/></div>
+      </div>
+      <div class="fr">
+        <div><label class="fl">Body Style</label>
+          <select class="fi" id="nv-body">
+            ${['SUV','Sedan','Truck','Hatchback','Wagon','Coupe'].map(b=>`<option>${b}</option>`).join('')}
+          </select>
+        </div>
+        <div><label class="fl">Fuel</label>
+          <select class="fi" id="nv-fuel">
+            ${['Gas','Electric','Hybrid','Plug-in Hybrid'].map(f=>`<option>${f}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <div class="inv-form-section">
+      <div class="inv-form-title">VIN</div>
+      <input class="fi" id="nv-vin" placeholder="1HGBH41JXMN109186 (optional)" style="width:100%"/>
+    </div>
+
+    <div class="inv-form-section">
+      <div class="inv-form-title">Vibe Tags
+        <span style="font-size:10px;font-weight:400;text-transform:none;letter-spacing:0;margin-left:6px;color:var(--di)">Pick up to 5 — these drive buyer matching</span>
+      </div>
+      <div class="vibe-tag-grid" id="vibe-tag-grid">
+        ${CRM_DOMAIN.vibeTagSuggestions.map(t=>`
+          <button class="vtg-chip" onclick="toggleNewVehicleVibe('${t}',this)">${t}</button>
+        `).join('')}
+      </div>
+    </div>
+
+    <div class="inv-form-section">
+      <div class="inv-form-title">${CRM_DOMAIN.imageLabel}</div>
+      <div class="img-upload-zone" id="img-upload-zone" onclick="document.getElementById('nv-img-input').click()">
+        <div class="img-upload-icon">📷</div>
+        <div class="img-upload-label">Tap to upload a photo<br/><span style="font-size:10px;opacity:.6">JPEG or PNG · max 5MB</span></div>
+      </div>
+      <input type="file" id="nv-img-input" accept="image/jpeg,image/png,image/webp"
+        style="display:none" onchange="handleInventoryImageSelect(event)"/>
+      <div class="upload-progress" id="upload-progress">
+        <div class="up-bar-track"><div class="up-bar-fill" id="up-bar-fill" style="width:0%"></div></div>
+        <div class="up-status" id="up-status">Uploading…</div>
+      </div>
+    </div>
+  </div>`;
+}
+
+function toggleNewVehicleVibe(tag, el) {
+  const idx = newVehicleVibes.indexOf(tag);
+  if (idx >= 0) {
+    newVehicleVibes.splice(idx, 1);
+    el.classList.remove('on');
+  } else {
+    if (newVehicleVibes.length >= 5) { showToast('Max 5 vibe tags', 'info'); return; }
+    newVehicleVibes.push(tag);
+    el.classList.add('on');
+  }
+}
+
+function handleInventoryImageSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  newVehicleImageFile = file;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const zone = document.getElementById('img-upload-zone');
+    if (zone) {
+      zone.classList.add('has-img');
+      zone.innerHTML = `<img src="${e.target.result}" alt="Preview"/>`;
+      newVehicleImageUrl = e.target.result; // local preview
+    }
+  };
+  reader.readAsDataURL(file);
+}
+
+async function uploadInventoryImage(file, vehicleId) {
+  if (!fbStorage) { console.warn('Firebase Storage not ready'); return null; }
+  try {
+    const dealerId = currentUser?.dealer_id || CRM_DOMAIN.dealerId;
+    const ref = fbStorage.ref(`inventory/${dealerId}/${vehicleId}.jpg`);
+
+    // Show progress
+    const progressDiv = document.getElementById('upload-progress');
+    const barFill     = document.getElementById('up-bar-fill');
+    const statusEl    = document.getElementById('up-status');
+    if (progressDiv) progressDiv.classList.add('show');
+
+    const uploadTask = ref.put(file);
+    return new Promise((resolve, reject) => {
+      uploadTask.on('state_changed',
+        snap => {
+          const pct = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+          if (barFill) barFill.style.width = pct + '%';
+          if (statusEl) statusEl.textContent = `Uploading… ${pct}%`;
+        },
+        reject,
+        async () => {
+          const url = await uploadTask.snapshot.ref.getDownloadURL();
+          if (statusEl) statusEl.textContent = '✓ Uploaded';
+          resolve(url);
+        }
+      );
+    });
+  } catch(e) {
+    console.warn('Image upload failed:', e);
+    return null;
+  }
+}
+
+// Upgraded addVehicle — includes vibe tags and image
+async function addVehicleFromForm() {
+  const year  = document.getElementById('nv-year')?.value;
+  const make  = document.getElementById('nv-make')?.value;
+  const model = document.getElementById('nv-model')?.value;
+  const price = Number(document.getElementById('nv-price')?.value)||0;  // Number() not parseFloat: avoids '12,000' → 12
+  if (!year||!make||!model||!price) { showToast('Please fill required fields','error'); return; }
+
+  const id = Date.now();
+  let imageUrl = '';
+
+  // Upload image if selected
+  if (newVehicleImageFile) {
+    const btn = document.querySelector('.dlr-modal .btn-primary, #add-vehicle-submit');
+    if (btn) { btn.disabled = true; btn.textContent = 'Uploading…'; }
+    imageUrl = await uploadInventoryImage(newVehicleImageFile, id) || '';
+  }
+
+  const nv = {
+    id:      String(id),
+    year:    parseInt(year),
+    make, model,
+    trim:    document.getElementById('nv-trim')?.value  || '',
+    price,
+    monthly: Math.round(price / 60),
+    mileage: document.getElementById('nv-miles')?.value || 'New',
+    body:    document.getElementById('nv-body')?.value  || 'SUV',
+    fuel:    document.getElementById('nv-fuel')?.value  || 'Gas',
+    vin:     document.getElementById('nv-vin')?.value   || '',
+    color:   '', status:'available', matches:0, views:0, emoji:'🚗',
+    vibeTags: newVehicleVibes.slice(),
+    imageUrl,
+    createdAt: Date.now(),
+  };
+
+  // Save to Firestore (primary) + localStorage (fallback)
+  const dealerId = currentUser?.dealer_id || 'metro_auto';
+  if (fbDb) {
+    try {
+      await fbDb.collection('dealers').doc(dealerId).collection('inventory')
+        .doc(nv.id).set({ ...nv, createdAt: firebase.firestore.FieldValue.serverTimestamp() });
+      // Firestore subscription will update inventory[] automatically
+    } catch(e) {
+      console.warn('Firestore save failed, using localStorage:', e);
+      inventory.unshift(nv);
+      lsSet(CRM_DOMAIN.inventoryKey, inventory);
+    }
+  } else {
+    inventory.unshift(nv);
+    lsSet(CRM_DOMAIN.inventoryKey, inventory);
+  }
+
+  newVehicleVibes = []; newVehicleImageFile = null; newVehicleImageUrl = '';
+  closeAddModal();
+  if (!fbDb) renderInventory();
+  showToast(`${make} ${model} added to inventory`, 'success');
+}
+
+</script>
+
+<!-- EDIT VEHICLE MODAL -->
+<div class="modal-overlay" id="edit-vehicle-modal" onclick="if(event.target===this)closeEditVehicleModal()">
+  <div class="modal" style="max-width:440px">
+    <div class="modal-title">Edit Vehicle</div>
+    <div class="modal-sub">Price changes will instantly re-evaluate all affected leads.</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0">
+      <div class="modal-form-group"><label class="modal-label">Year</label><input class="modal-input" id="ev-year" readonly style="opacity:.5"/></div>
+      <div class="modal-form-group"><label class="modal-label">Make</label><input class="modal-input" id="ev-make" readonly style="opacity:.5"/></div>
+      <div class="modal-form-group"><label class="modal-label">Model</label><input class="modal-input" id="ev-model" readonly style="opacity:.5"/></div>
+      <div class="modal-form-group">
+        <label class="modal-label">Status</label>
+        <select class="modal-input" id="ev-status">
+          <option value="available">Available</option>
+          <option value="reserved">Reserved</option>
+          <option value="sold">Sold</option>
+        </select>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Price ($) ✎</label>
+        <input class="modal-input" id="ev-price" type="number" style="font-weight:700;font-size:16px"/>
+      </div>
+      <div class="modal-form-group">
+        <label class="modal-label">Mileage</label>
+        <input class="modal-input" id="ev-miles"/>
+      </div>
+    </div>
+    <div style="background:rgba(220,38,38,.06);border:1px solid rgba(220,38,38,.2);border-radius:9px;padding:10px 13px;margin-bottom:16px;font-size:12px;color:var(--rd);line-height:1.5">
+      ⚠️ Changing the price will flag any leads where the new price exceeds the buyer's stated budget. Those leads appear under the <strong>Price Mismatch</strong> filter.
+    </div>
+    <div class="modal-actions">
+      <button class="btn-sm btn-ghost" onclick="closeEditVehicleModal()">Cancel</button>
+      <button class="btn-sm btn-primary" onclick="saveVehicleEdit()">Save Changes</button>
+    </div>
+  </div>
+</div>
+
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then(reg => {
+        reg.addEventListener('updatefound', () => {
+          const w = reg.installing;
+          w.addEventListener('statechange', () => {
+            if (w.state === 'installed' && navigator.serviceWorker.controller) {
+              if (typeof showToast === 'function')
+                showToast('Update available — refresh to get the latest', 'info');
+            }
+          });
+        });
+      })
+      .catch(e => console.warn('SW registration failed:', e));
+  });
+}
+
+// A2HS install prompt
+let _a2hs = null;
+window.addEventListener('beforeinstallprompt', e => {
+  e.preventDefault();
+  _a2hs = e;
+  setTimeout(() => {
+    if (!_a2hs) return;
+    const b = document.createElement('div');
+    b.id = 'install-banner';
+    b.style.cssText = 'position:fixed;bottom:72px;left:50%;transform:translateX(-50%);' +
+      'background:#1a56db;color:#fff;border-radius:12px;padding:10px 16px;' +
+      'font-size:13px;font-weight:600;display:flex;align-items:center;gap:10px;' +
+      'z-index:9999;box-shadow:0 8px 24px rgba(26,86,219,.4);white-space:nowrap';
+    b.innerHTML = '📲 Install AutoDrive' +
+      '<button onclick="installApp()" style="background:rgba(255,255,255,.2);border:none;' +
+      'color:#fff;padding:4px 10px;border-radius:7px;font-weight:700;cursor:pointer">Install</button>' +
+      '<button onclick="document.getElementById('install-banner').remove()" ' +
+      'style="background:none;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px">✕</button>';
+    document.body.appendChild(b);
+    setTimeout(() => b.remove(), 12000);
+  }, 8000);
+});
+window.addEventListener('appinstalled', () => {
+  _a2hs = null;
+  const b = document.getElementById('install-banner');
+  if (b) b.remove();
+});
+function installApp() {
+  if (!_a2hs) return;
+  _a2hs.prompt();
+  _a2hs.userChoice.then(() => { _a2hs = null; });
+}
+</script>
+
+<!-- SOLD CAPTURE MODAL -->
+<div class="sold-modal-overlay" id="sold-modal" onclick="if(event.target===this)closeSoldModal()">
+  <div class="sold-modal">
+    <div class="sold-header">
+      <span class="sold-trophy">🎉</span>
+      <div class="sold-title">Deal Closed!</div>
+      <div class="sold-sub" id="sold-buyer">Buyer name</div>
+      <div class="sold-sub" style="font-weight:600;color:var(--tx);margin-top:2px" id="sold-vehicle">Vehicle</div>
+    </div>
+
+    <!-- Priority score at close -->
+    <div style="text-align:center;margin-bottom:6px">
+      <div style="font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:8px">Intent Score at Close</div>
+      <div class="sold-score-ring" id="sold-score">0</div>
+      <div class="sold-threshold" id="sold-threshold"></div>
+    </div>
+
+    <!-- Active signals -->
+    <div style="font-size:11px;color:var(--mu);font-weight:700;text-transform:uppercase;letter-spacing:1px;text-align:center;margin-bottom:8px">Signals Active at Close</div>
+    <div class="sold-signals" id="sold-signals"></div>
+
+    <!-- Optional sale details -->
+    <div class="sold-price-row">
+      <div class="sold-price-label">Final Sale Price (optional)</div>
+      <div style="display:flex;align-items:center;gap:4px">
+        <span style="font-size:18px;color:var(--mu)">$</span>
+        <input class="sold-price-input" id="sold-price" type="number" placeholder="0"/>
+      </div>
+    </div>
+    <div class="sold-price-row" style="margin-bottom:20px">
+      <div class="sold-price-label">Notes (optional)</div>
+      <textarea class="sold-note-input" id="sold-note" placeholder="e.g. Trade-in, financing through dealer, etc."></textarea>
+    </div>
+
+    <div style="display:flex;gap:9px">
+      <button class="btn-sm btn-ghost" style="flex:1" onclick="closeSoldModal()">Cancel</button>
+      <button class="btn-sm btn-primary" style="flex:2;background:var(--gr);border-color:var(--gr)" onclick="confirmSold()">
+        ✓ Confirm Sale & Capture Data
+      </button>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
